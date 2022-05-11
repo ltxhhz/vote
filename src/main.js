@@ -4,6 +4,7 @@ import pencil from "./components/pencil";
 import router from './router.js'
 
 import './assets/bs-tools.css'
+import 'papercss'
 
 createApp(App)
 .use(router)
