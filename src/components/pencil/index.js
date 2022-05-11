@@ -7,11 +7,12 @@ import Tabs from './Tabs';
 import Tab from './Tab';
 import Popover from './Popover';
 import Toast from './Toast';
+import div from './div';
 
 
 // 组件列表
 const components = [
-  Button, Input, Card, Checkbox, Tabs, Tab, Popover
+  Button, Input, Card, Checkbox, Tabs, Tab, Popover,div
 ]
 const plugins = [
   Toast

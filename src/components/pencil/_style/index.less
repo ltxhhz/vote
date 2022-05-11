@@ -2,8 +2,12 @@
     position: relative;
     font-family: inherit;
     margin: 2px;
+    &>*:first-child{
+      position: relative;
+      z-index: 1;
+    }
     & .pencil_overlay {
-        z-index: -3;
+        // z-index: -3;
         position: absolute;
         top: 0;
         left: 0;
