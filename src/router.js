@@ -1,14 +1,16 @@
 import * as vueRouter from 'vue-router'
 import login from './components/login.vue'
 import index from './pages/index.vue';
+import create from './pages/create.vue';
 
 /** @type {vueRouter.RouteRecordRaw[]} */
 const routes = [{
   path: '/',
   component: index
-}/* ,{
-  path:''
-} */]
+},{
+  path:'/create',
+  component:create
+} ]
 
 const router = vueRouter.createRouter({
   history: vueRouter.createWebHashHistory(),
