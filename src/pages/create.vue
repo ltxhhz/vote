@@ -1,7 +1,7 @@
 <template>
   <div class="paper container container-md ">
     <div class="row">
-      <div class="form-group col-12">
+      <div class="col-12">
         <div class="fs-4">创建投票</div>
       </div>
     </div>
