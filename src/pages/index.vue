@@ -1,6 +1,6 @@
 <template>
-  <div class="W-100 h-100">
-    <div class="d-flex flex-column justify-content-center align-items-center h-50">
+  <div class="w-100 h-100">
+    <div class="index-head d-flex flex-column justify-content-center align-items-center">
       <h3>投票，就这么简单</h3>
       <div>
         <button class="btn-primary" @click="start">
@@ -38,11 +38,8 @@ function start(e) {
 </script>
 
 <style lang="less">
-
-// .index-container {
-//   padding-top: calc(50px + 1rem * 2);
-//   width: 100%;
-//   height: 100%;
-// }
+.index-head{
+  height: 350px;
+}
 
 </style>

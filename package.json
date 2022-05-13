@@ -9,6 +9,10 @@
     "host": "vite --port 7000 --host "
   },
   "dependencies": {
+    "@better-scroll/core": "^2.4.2",
+    "@better-scroll/mouse-wheel": "^2.4.2",
+    "@better-scroll/observe-dom": "^2.4.2",
+    "@better-scroll/scroll-bar": "^2.4.2",
     "less": "^4.1.2",
     "papercss": "^1.8.3",
     "pencil-vue": "^0.2.2",
