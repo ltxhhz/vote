@@ -30,12 +30,12 @@
         </label>
       </div>
       <div class="form-group col-4 mb-0 pb-0">
-          <label for="min">最少选</label>
-          <input class="input-block" placeholder="无限制" type="number" id="min" :disabled="!single" v-model="min">
+        <label for="min">最少选</label>
+        <input class="input-block" placeholder="无限制" type="number" id="min" :disabled="!single" v-model="min">
       </div>
       <div class="form-group col-4 mb-0 pb-0">
-          <label for="max">最多选</label>
-          <input class="input-block" placeholder="无限制" type="number" id="max" :disabled="!single" v-model="max">
+        <label for="max">最多选</label>
+        <input class="input-block" placeholder="无限制" type="number" id="max" :disabled="!single" v-model="max">
       </div>
     </div>
     <div class="row">
@@ -48,13 +48,13 @@
       </div>
     </div>
     <div class="row justify-content-end">
-        <button class="d-block w-10 col-6 sm-4" @click="next">下一步</button>
+      <button class="d-block w-10 col-6 sm-4" @click="next">下一步</button>
     </div>
   </div>
 </template>
 <script setup>
 import { getCurrentInstance, ref } from 'vue';
-const {proxy}=getCurrentInstance()
+const { proxy } = getCurrentInstance()
 const single = ref(false),
   min = ref(''),
   max = ref(''),

@@ -39,7 +39,7 @@
 -->
   <nav class="border fixed split-nav">
     <div class="nav-brand">
-      <h3><a href="#">投票网</a></h3>
+      <h3><a href="/">投票的网</a></h3>
     </div>
     <div class="collapsible">
       <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -101,6 +101,7 @@ let bs
 
 onMounted(() => {
   bs = new BScroll(proxy.$refs.rv, {
+    click:true,
     mouseWheel: {
       speed: 20,
       invert: false,
