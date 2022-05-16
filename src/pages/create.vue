@@ -64,7 +64,7 @@ function singleChange(e) {
   if (!single.value) min.value = max.value = ''
 }
 function next(e) {
-  proxy.$router.push('/edit-vote')
+  proxy.$router.push('/edit')
 }
 </script>
 

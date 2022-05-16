@@ -75,43 +75,93 @@
             <label class="btn-close" for="add-option">X</label>
             <h4 class="modal-title">添加选项</h4>
             <hr>
-            <div class="row">
-              <div class="form-group col-12">
-                <label for="startTime">选项内容</label>
-                <input type="text" class="w-100" id="option-content" placeholder="选项内容(必填)">
-              </div>
-              <div class="form-group col-12">
-                <label for="option-image">选项图片</label>
-                <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
-                <div v-if="imgUrl" class="e-container e-preview position-relative overflow-hidden">
-                  <img :src="imgUrl" alt="选项图片" :title="imgName">
-                  <div class="e-tools position-absolute top-0 right-0 bottom-0 left-0 ">
-                    <button class="e-btn-close btn-close d-flex justify-content-center align-items-center" @click="removeImage"></button>
-                  </div>
+            <!-- <div class=""> -->
+            <div class="form-group">
+              <label for="startTime">选项内容</label>
+              <input type="text" class="w-100" id="option-content" placeholder="选项内容(必填)">
+            </div>
+            <div class="form-group d-flex flex-column">
+              <label for="option-image">选项图片</label>
+              <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
+              <div v-if="imgUrl" class="e-container e-preview position-relative overflow-hidden">
+                <img :src="imgUrl" alt="选项图片" :title="imgName">
+                <div class="e-tools position-absolute top-0 right-0 bottom-0 left-0 ">
+                  <button class="e-btn-close btn-close d-flex justify-content-center align-items-center"
+                    @click="removeImage"></button>
                 </div>
-                <div v-else
-                  class="e-img-upload e-container cursor-pointer d-flex flex-column justify-content-center align-items-center"
-                  :class="{ 'child-borders': dragging }" @click="uploadClick" @dragenter.prevent="uploadDragEnter"
-                  @dragleave.prevent="uploadDragLeave" @drop.prevent="uploadDragDrop" @dragover.prevent>
-                  <div class="d-flex flex-column justify-content-center align-items-center m-2 w-100 h-100 pe-none"
-                    :class="{ 'border-dashed border-thick': dragging }">
-                    <div class="" style="font-size: 18px;">拖放到此或点击上传</div>
-                    <div class="text-muted" style="font-size: 13px;">最多一张图，大小限制10mb</div>
-                  </div>
+              </div>
+              <div v-else
+                class="e-img-upload e-container cursor-pointer d-flex flex-column justify-content-center align-items-center align-self-center"
+                :class="{ 'child-borders': dragging }" @click="uploadClick" @dragenter.prevent="uploadDragEnter"
+                @dragleave.prevent="uploadDragLeave" @drop.prevent="uploadDragDrop" @dragover.prevent>
+                <div class="d-flex flex-column justify-content-center align-items-center m-2 w-100 h-100 pe-none"
+                  :class="{ 'border-dashed border-thick': dragging }">
+                  <div class="" style="font-size: 18px;">拖放到此或点击上传</div>
+                  <div class="text-muted" style="font-size: 13px;">最多一张图，大小限制10mb</div>
                 </div>
               </div>
             </div>
-            <p class="modal-text">This is another example of modal which is implemented with pure CSS! :D</p>
-            <a href="/#download">Get PaperCSS</a>
-            <label for="add-option" class="modal-link">Close</label>
+            <!-- </div> -->
+            <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
+            <div class="d-flex justify-content-center">
+              <label for="add-option" class="paper-btn btn-muted mr-3">关闭</label>
+              <label for="add-option" class="paper-btn btn-primary" @click="saveOption">保存</label>
+            </div>
           </div>
         </div>
       </div>
       <div class="e-func col-12 xs-4">
-        <button class="btn-block btn-secondary-outline">投票设置</button>
+        <label class="paper-btn btn-block btn-secondary-outline text-center" for="vote-config">投票设置</label>
+        <input class="modal-state" id="vote-config" type="checkbox">
+        <div class="modal">
+          <!-- <label class="modal-bg" for="vote-config"></label> -->
+          <div class="modal-body container container-sm">
+            <label class="btn-close" for="vote-config">X</label>
+            <h4 class="modal-title">添加选项</h4>
+            <hr>
+            <div class="row mt-3">
+              <div class="form-group col-12 xs-6 md-4 px-2 d-flex align-items-center justify-content-between">
+                <label for="everyday-vote" class="mb-0">每天可投票</label>
+                <label class="paper-switch-2">
+                  <input id="everyday-vote" name="everyday-vote" type="checkbox" v-model="config.everyday" />
+                  <span class="paper-switch-slider round"></span>
+                </label>
+              </div>
+              <div class="form-group col-12 xs-6 md-4 px-2 d-flex align-items-center justify-content-between">
+                <label for="hide-vote-num" class="mb-0">隐藏票数</label>
+                <label class="paper-switch-2">
+                  <input id="hide-vote-num" name="hide-vote-num" type="checkbox" v-model="config.hideVoteNum" />
+                  <span class="paper-switch-slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
+            <div class="d-flex justify-content-center">
+              <label for="vote-config" class="paper-btn btn-muted mr-3">关闭</label>
+              <label for="vote-config" class="paper-btn btn-primary" @click="saveConfig">保存</label>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="e-func col-12 xs-4">
-        <button class="btn-block btn-success-outline">投票链接</button>
+        <label class="paper-btn btn-block btn-success-outline text-center" for="vote-link"
+          @click="createLinkImg">投票链接</label>
+        <input class="modal-state" id="vote-link" type="checkbox">
+        <div class="modal">
+          <label class="modal-bg" for="vote-link">X</label>
+          <div class="modal-body e-qrcode">
+            <label class="btn-close" for="vote-link">X</label>
+            <h5 class="modal-title">链接二维码</h5>
+            <hr>
+            <div class="e-qrcode-container mt-1 d-inline-block">
+              <!-- <canvas ref="qr" class="w-100 h-100"></canvas> -->
+              <img :src="qrLink" alt="qrcode">
+            </div>
+            <div class="fs-6 text-center">
+              <span ref="copyLink" class="modal-link">复制链接</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -130,12 +180,38 @@
   </div>
 </template>
 <script setup>
-import { getCurrentInstance, ref } from 'vue';
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
+import QRCode from 'qrcode';
+import ClipboardJS from 'clipboard';
 
 const { proxy } = getCurrentInstance()
 const dragging = ref(false),
   imgUrl = ref(''),
-  imgName = ref('')
+  imgName = ref(''),
+  tip = reactive({
+    use: 'default',
+    data: {
+      default: '点击上方或拖动图片到上方',
+      error: '只接受10mb以内的图片文件',
+      success: '选择图片成功'
+    }
+  }),
+  config = reactive({
+    everyday: false,
+    hideVoteNum: false
+  }),
+  qrLink = ref('')
+
+onMounted(() => {
+  new ClipboardJS(proxy.$refs.copyLink, {
+    text() {
+      console.log('copied');
+      return location.href
+    }
+  }).on('error', function (e) {
+    console.error('复制失败');
+  })
+})
 
 function uploadClick(e) {
   proxy.$refs.inputFile.click()
@@ -151,17 +227,32 @@ function uploadDragLeave(e) {
 function uploadDragDrop(e) {
   dragging.value = false
   let { files: [file], types: [type], items: [item] } = e.dataTransfer
-  if (file && item.kind == 'file' && /^image\/.+$/.test(item.type)) {
+  if (file && item.kind == 'file' && /^image\/.+$/.test(item.type) && file.size / 1024 / 1024 < 10) {
     console.log('yes', file);
     imgUrl.value = URL.createObjectURL(file)
     imgName.value = file.name
+    tip.use = 'success'
   } else {
-
+    console.log('只接受图片，且大小不超过10mb');
+    tip.use = 'error'
   }
   console.log(e.dataTransfer.files.length, e.dataTransfer.types, e.dataTransfer.items[0]);
 }
 function removeImage(e) {
-  imgUrl.value=imgName.value=''
+  imgUrl.value = imgName.value = ''
+  tip.use = 'default'
+}
+function saveOption(e) {
+  console.log('save');
+}
+function saveConfig(e) {
+  console.log('save');
+}
+function createLinkImg(e) {
+  qrLink.value = ''
+  QRCode.toDataURL(location.href).then(res => {
+    qrLink.value = res
+  })
 }
 </script>
 
@@ -243,5 +334,14 @@ svg path {
   font-size: 1rem;
   outline: none;
   padding: 0.5rem;
+}
+
+.modal-body.e-qrcode {
+  width: auto !important;
+}
+
+.e-qrcode-container {
+  max-width: 13rem;
+  max-height: 13rem;
 }
 </style>
