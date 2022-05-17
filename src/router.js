@@ -3,6 +3,7 @@ import login from './components/login.vue'
 import index from './pages/index.vue';
 import create from './pages/create.vue';
 import edit from './pages/edit.vue';
+import manager from './pages/manager.vue';
 
 /** @type {vueRouter.RouteRecordRaw[]} */
 const routes = [{
@@ -14,6 +15,9 @@ const routes = [{
 },{
   path:'/edit',
   component:edit
+},{
+  path:'/manager',
+  component:manager
 }]
 
 const router = vueRouter.createRouter({
