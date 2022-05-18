@@ -39,7 +39,7 @@
 -->
   <nav class="border fixed split-nav">
     <div class="nav-brand">
-      <h3><a href="/">投票的网</a></h3>
+      <h3><router-link to="/">投票的网</router-link></h3>
     </div>
     <div class="collapsible">
       <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -64,8 +64,7 @@
       <div class="rv-fill w-100"></div>
     </div>
   </div>
-  <button class="position-fixed d-none1" style="left: 100px;top:100px;z-index:10;" @click="test">test</button>
-  <!-- <login /> -->
+  <button class="position-fixed d-none" style="left: 100px;top:100px;z-index:10;" @click="test">test</button>
   <div class="position-fixed left-0 bottom-0 w-100 overflow-hidden position-relative" style="height: 15vh">
     <svg class="waves w-100 h-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
       viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
@@ -80,14 +79,12 @@
       </g>
     </svg>
   </div>
-  <toast ref="toast"></toast>
 </template>
 
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { getCurrentInstance, onMounted } from 'vue';
-import Toast from './components/toast.vue';
 import BScroll from '@better-scroll/core';
 import MouseWheel from '@better-scroll/mouse-wheel'
 import ScrollBar from '@better-scroll/scroll-bar'
@@ -102,7 +99,7 @@ let bs
 
 onMounted(() => {
   bs = new BScroll(proxy.$refs.rv, {
-    click:true,
+    click: true,
     mouseWheel: {
       speed: 20,
       invert: false,
@@ -116,7 +113,8 @@ onMounted(() => {
   })
 })
 function test(e) {
-proxy.$refs.toast.$show("test",{top:true})
+  // console.log(proxy.$toast)
+  proxy.$toast("test", { top: 0 })
 }
 </script>
 
@@ -126,7 +124,8 @@ proxy.$refs.toast.$show("test",{top:true})
   // padding-top: 70px;
   z-index: 2;
 }
-.rv-fill{
+
+.rv-fill {
   height: 70px;
 }
 </style>

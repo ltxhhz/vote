@@ -1,12 +1,12 @@
 <template>
-  <teleport to="body">
+  <!-- <teleport to="body"> -->
     <transition-group name="toasts" tag="div" class="pe-none">
       <div v-for="item, index of toasts" :key="item.key" class="vote-toast position-fixed"
         :class="{ 't-top': item.top }" :style="{ zIndex: index + 10 }">
-        <span class="border border-2 border-primary px-2 py-1 background-primary">{{ item.text }}</span>
+        <span class="border border-2 border-primary px-2 py-1 background-primary d-inline-block translate-middle-x">{{ item.text }}</span>
       </div>
     </transition-group>
-  </teleport>
+  <!-- </teleport> -->
 </template>
 <script>
 import { defineComponent, reactive } from "vue";
@@ -31,7 +31,7 @@ export default defineComponent({
         this.toasts.shift()
       }, duration);
     }
-  }
+  },
 });
 </script>
 

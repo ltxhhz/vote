@@ -206,10 +206,12 @@ onMounted(() => {
   new ClipboardJS(proxy.$refs.copyLink, {
     text() {
       console.log('copied');
+      proxy.$toast('已复制')
       return location.href
     }
   }).on('error', function (e) {
-    console.error('复制失败');
+    console.error('复制失败',e);
+    proxy.$toast('复制失败，请手动尝试')
   })
 })
 
@@ -252,6 +254,8 @@ function createLinkImg(e) {
   qrLink.value = ''
   QRCode.toDataURL(location.href).then(res => {
     qrLink.value = res
+  }).catch(err=>{
+    proxy.$toast('生成二维码失败')
   })
 }
 </script>

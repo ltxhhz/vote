@@ -1,12 +1,13 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import pencil from "./components/pencil";
 import router from './router.js'
+
+import toast from './components/toast/index';
 
 import './assets/bs-tools.css'
 import 'papercss'
 
 createApp(App)
 .use(router)
-.use(pencil)
+.use(toast)
 .mount('#app')
