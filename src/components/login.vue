@@ -16,10 +16,10 @@
           <label for="pwd">密码：</label>
           <input class="input-block" id="pwd" v-model="password" type="password" name="pwd">
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-2">
-          <button @click="login" class="">登录</button>
-          <div class="form-group mb-0 user-select-none">
-            <label for="remember" class="paper-check" popover-bottom="不是自己的电脑不要勾选此选项">
+        <div class="row mb-0">
+          <button @click="login" class="col-12 xs-6">登录</button>
+          <div class="form-group mb-0 user-select-none col-12 xs-6 d-inline-flex align-items-center justify-content-center">
+            <label for="remember" class="paper-check m-0" popover-bottom="不是自己的电脑不要勾选此选项">
               <input type="checkbox" name="paperChecks" id="remember" value="option 2" v-model="checked">
               <span>记住我</span>
             </label>
@@ -42,8 +42,8 @@
           <div style="min-height: 1em;" :class="info ? 'visible' : 'invisible'">
           </div>
         </div>
-        <div class="mb-0">
-          <button class="" :disabled="!pass">注册</button>
+        <div class="row justify-content-center mb-0">
+          <button class="col-12 xs-6" :disabled="!pass">注册</button>
         </div>
         <!-- </div> -->
       </div>
@@ -60,7 +60,7 @@ const user = ref(''),
   info = ref(''),
   pass = ref(false)
 
-const proxy = getCurrentInstance()
+const {proxy} = getCurrentInstance()
 
 const props = defineProps({
   modelValue: {
@@ -81,12 +81,12 @@ onMounted(() => {
 function login() {
 
   let message;
-  if (this.user && this.password) {
+  if (user.value && password.value) {
     message = "<strong class='success'>登录成功</strong>";
   } else {
     message = "<strong class='error'>表单内容不能为空</strong>";
   }
-  this.$toast(message, {
+  proxy.$toast(message, {
     enableHtml: true,
     showClose: true,
   });

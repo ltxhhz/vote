@@ -42,6 +42,8 @@ export default defineComponent({
   bottom: 5rem;
   transition: all .3s ease;
   display: inline-block;
+  max-width: 80%;
+  width: 100%;
 
   &.t-top {
     bottom: unset;
