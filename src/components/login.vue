@@ -1,69 +1,85 @@
 <template>
-  <Tabs v-model="activeName">
-    <Tab title="登录">
-      <div>
-        账号：
-        <Input v-model="user"></Input>
+  <div class="vote-login position-fixed left-0 top-0 right-0 bottom-0 justify-content-between align-items-center"
+    v-show="show1" @click="show1 = ''">
+    <div class="row justify-content-around tabs container container-xs p-3 pt-0" @click.stop>
+      <input id="tab1" type="radio" name="tabs" :checked="show1=='login'">
+      <label for="tab1">登录</label>
+
+      <input id="tab2" type="radio" name="tabs" :checked="show1=='register'">
+      <label for="tab2">注册</label>
+      <div class="content" id="content1">
+        <div class="form-group">
+          <label for="user">账号：</label>
+          <input class="input-block" type="text" id="user" v-model="user">
+        </div>
+        <div class="form-group">
+          <label for="pwd">密码：</label>
+          <input class="input-block" id="pwd" v-model="password" type="password" name="pwd">
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <button @click="login" class="">登录</button>
+          <div class="form-group mb-0 user-select-none">
+            <label for="remember" class="paper-check" popover-bottom="不是自己的电脑不要勾选此选项">
+              <input type="checkbox" name="paperChecks" id="remember" value="option 2" v-model="checked">
+              <span>记住我</span>
+            </label>
+          </div>
+        </div>
       </div>
-      <br />
-      <div>
-        密码：
-        <Input v-model="password" type="password"></Input>
-      </div>
-      <div class="d-flex justify-content-between align-items-center mt-2">
-        <Button @click="login" class="btn mr-1" type="primary" elevation="2">登录</Button>
-        <Popover position="bottom" trigger="hover" class="cursor-pointer">
-          <template #content>
-            不是自己的电脑不要勾选此选项
-          </template>
-          <Checkbox v-model="checked" id="remember" class="cursor-inherit">
-            <label for="remember" class="cursor-inherit">记住我</label>
-          </Checkbox>
-        </Popover>
-      </div>
-    </Tab>
-    <Tab title="注册">
-      <div class="d-flex flex-column align-items-center reg-form">
-        <div>
+      <div class="content" id="content2">
+        <!-- <div class="d-flex flex-column align-items-center reg-form"> -->
+        <div class="form-group">
           <label for="" class="reg-label">账号：</label>
-          <Input v-model="user"></Input>
+          <input class="input-block" type="text" v-model="user">
         </div>
-        <div>
+        <div class="form-group">
           <label for="" class="reg-label">密码：</label>
-          <Input v-model="password" type="password"></Input>
+          <input class="input-block" v-model="password" type="password">
         </div>
-        <div>
+        <div class="form-group">
           <label for="" class="reg-label">重复密码：</label>
-          <Input v-model="passwordRetype" type="password"></Input>
+          <input class="input-block" v-model="passwordRetype" type="password">
           <div style="min-height: 1em;" :class="info ? 'visible' : 'invisible'">
           </div>
         </div>
         <div class="mb-0">
-          <Button class="btn" type="primary" elevation="2" :disabled="!pass">注册</Button>
+          <button class="" :disabled="!pass">注册</button>
         </div>
+        <!-- </div> -->
       </div>
-    </Tab>
-  </Tabs>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, ref } from "vue";
+import { computed, getCurrentInstance, onMounted, ref } from "vue";
 const user = ref(''),
   password = ref(''),
   passwordRetype = ref(''),
-  activeName = ref('登录'),
   checked = ref(false),
   info = ref(''),
   pass = ref(false)
 
 const proxy = getCurrentInstance()
 
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: ''
+  }
+})
+const emits = defineEmits(['update:modelValue'])
+const show1 = computed({
+  get: () => props.modelValue,
+  set: (e) => emits('update:modelValue', e)
+})
+
 onMounted(() => {
 
 })
 
 function login() {
-  
+
   let message;
   if (this.user && this.password) {
     message = "<strong class='success'>登录成功</strong>";
@@ -77,27 +93,13 @@ function login() {
 }
 </script>
 <style lang="less">
-.btn {
-  margin-right: 45px;
-}
+.vote-login {
+  z-index: 101;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
 
-.error {
-  color: #ef5541;
-}
-
-.success {
-  color: #41bc58;
-}
-
-.reg-label {
-  display: inline-block;
-  text-align: right;
-  width: 80px;
-}
-
-.reg-form {
-  >* {
-    margin-bottom: 1rem;
+  >div {
+    background-color: var(--main-background);
   }
 }
 </style>

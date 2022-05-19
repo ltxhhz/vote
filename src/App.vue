@@ -1,5 +1,5 @@
 <template>
-<!--
+  <!--
 *          .,:,,,                                        .::,,,::.          
 *        .::::,,;;,                                  .,;;:,,....:i:         
 *        :i,.::::,;i:.      ....,,:::::::::,....   .;i:,.  ......;i.        
@@ -39,7 +39,9 @@
 -->
   <nav class="border fixed split-nav">
     <div class="nav-brand">
-      <h3><router-link to="/">投票的网</router-link></h3>
+      <h3>
+        <router-link to="/">投票的网</router-link>
+      </h3>
     </div>
     <div class="collapsible">
       <input id="collapsible1" type="checkbox" name="collapsible1">
@@ -50,8 +52,8 @@
       </label>
       <div class="collapsible-body">
         <ul class="inline">
-          <li><a href="#">注册</a></li>
-          <li><a href="#">登录</a></li>
+          <li><a href="javascript:void 0;" @click="showLogin='register'">注册</a></li>
+          <li><a href="javascript:void 0;" @click="showLogin='login'">登录</a></li>
           <li><a href="https://github.com/ltxhhz/vote" target="_blank">Github</a></li>
         </ul>
       </div>
@@ -65,6 +67,7 @@
     </div>
   </div>
   <button class="position-fixed d-none" style="left: 100px;top:100px;z-index:10;" @click="test">test</button>
+  <login v-model="showLogin"/>
   <div class="position-fixed left-0 bottom-0 w-100 overflow-hidden position-relative" style="height: 15vh">
     <svg class="waves w-100 h-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
       viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
@@ -84,17 +87,21 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import { getCurrentInstance, onMounted } from 'vue';
+import { getCurrentInstance, onMounted, ref } from 'vue';
 import BScroll from '@better-scroll/core';
 import MouseWheel from '@better-scroll/mouse-wheel'
 import ScrollBar from '@better-scroll/scroll-bar'
 import ObserveDOM from '@better-scroll/observe-dom'
+
+import login from './components/login.vue';
 
 BScroll.use(ObserveDOM)
 BScroll.use(MouseWheel)
 BScroll.use(ScrollBar)
 
 const { proxy } = getCurrentInstance()
+const showLogin = ref('')
+
 let bs
 
 onMounted(() => {

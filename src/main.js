@@ -5,7 +5,8 @@ import router from './router.js'
 import toast from './components/toast/index';
 
 import './assets/bs-tools.css'
-import 'papercss'
+import './assets/paper.css';
+// import 'papercss'
 
 createApp(App)
 .use(router)
