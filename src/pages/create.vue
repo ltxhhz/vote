@@ -92,7 +92,7 @@ function next(e) {
     }).then(e=>{
       console.log(e.body);
       if (e.body.status==1) {
-        proxy.$router.push({name:'edit',params:{uuid:e.body.uuid}})
+        proxy.$router.push({name:'edit',params:{uuid:e.body.data}})
       } else {
         proxy.$toast('创建失败，请重试')
       }

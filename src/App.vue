@@ -139,7 +139,7 @@ onMounted(() => {
   utils.config.login = proxy.$refs.login1
 })
 function test(e) {
-  console.log(dayjs().format('YYYY-MM-DDTHH:mm:ss'))
+  console.log(proxy.$route.params.uuid)
 }
 utils.config.account = Cookies.get('account')
 const skey = Cookies.get('skey')

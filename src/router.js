@@ -22,7 +22,7 @@ const routes = [{
   }
 },{
   name:'edit',
-  path:'/edit',
+  path:'/edit/:uuid?',
   component:edit,
   meta:{
     title:'编辑投票'

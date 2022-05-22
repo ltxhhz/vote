@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12 text-center">title</div>
+      <div class="col-12 text-center">{{ voteData.title }}</div>
     </div>
     <div class="row">
       <div class="col-12 text-center text-muted e-sub">
@@ -50,21 +50,27 @@
       </div>
     </div>
     <div class="row text-center">
-      <div class="col-fill">
-        <span class="mr-1 text-nowrap">开始时间</span>
-        <code class="text-nowrap">2021-5-13</code>
+      <div class="col-12 sm-4 mb-2 row justify-content-center">
+        <span class="mr-1 text-nowrap col-12 sm-6">开始时间</span>
+        <div class=" col-12">
+          <code class="text-nowrap">{{ dayjs(voteData.start).format('YYYY-MM-DD HH:mm:ss') }}</code>
+        </div>
       </div>
-      <div class="col-fill">
-        <span class="mr-1 text-nowrap">结束时间</span>
-        <code class="text-nowrap">2021-6-13</code>
+      <div class="col-12 sm-4 mb-2 row justify-content-center">
+        <span class="mr-1 text-nowrap col-12 sm-6">结束时间</span>
+        <div class="col-12">
+          <code class="text-nowrap ">{{ dayjs(voteData.end).format('YYYY-MM-DD HH:mm:ss') }}</code>
+        </div>
       </div>
-      <div class="col-fill">
-        <span class="mr-1 text-nowrap">投票规则</span>
-        <code class="text-nowrap">单选</code>
+      <div class="col-12 sm-4 mb-2 row justify-content-center">
+        <span class="mr-1 text-nowrap col-12 sm-6">投票规则</span>
+        <div class="col-12">
+          <code class="text-nowrap ">{{ voteData.single ? '单选' : '多选' }}</code>
+        </div>
       </div>
     </div>
   </div>
-  <div class="paper container container-md">
+  <div v-if="utils.config.isLogin" class="paper container container-md">
     <div class="row mb-0">
       <div class="e-func col-12 xs-4">
         <label class="paper-btn btn-block btn-primary-outline text-center" for="add-option">添加选项</label>
@@ -183,6 +189,10 @@
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import QRCode from 'qrcode';
 import ClipboardJS from 'clipboard';
+import superagent from 'superagent'
+import dayjs from 'dayjs';
+
+import utils from '../utils';
 
 const { proxy } = getCurrentInstance()
 const dragging = ref(false),
@@ -200,20 +210,37 @@ const dragging = ref(false),
     everyday: false,
     hideVoteNum: false
   }),
-  qrLink = ref('')
+  qrLink = ref(''),
+  voteData = reactive({
+    title: 'title',
+    start: +dayjs(),
+    end: +dayjs().add(1, 'day'),
+    single: true
+  })
+const uuid = proxy.$route.params.uuid
 
 onMounted(() => {
-  new ClipboardJS(proxy.$refs.copyLink, {
+  console.log(utils.config);
+  utils.config.isLogin && new ClipboardJS(proxy.$refs.copyLink, {
     text() {
       console.log('copied');
       proxy.$toast('已复制')
       return location.href
     }
   }).on('error', function (e) {
-    console.error('复制失败',e);
+    console.error('复制失败', e);
     proxy.$toast('复制失败，请手动尝试')
   })
 })
+
+if (uuid) {
+  superagent.post('/api/content')
+    .send({
+      // skey,
+      // account: utils.config.account,
+      data: uuid
+    })
+}
 
 function uploadClick(e) {
   proxy.$refs.inputFile.click()
@@ -254,7 +281,7 @@ function createLinkImg(e) {
   qrLink.value = ''
   QRCode.toDataURL(location.href).then(res => {
     qrLink.value = res
-  }).catch(err=>{
+  }).catch(err => {
     proxy.$toast('生成二维码失败')
   })
 }

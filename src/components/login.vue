@@ -112,7 +112,8 @@ function login() {
           expires: 365
         })
         proxy.$toast('登录成功')
-        show1.value=''
+        show1.value = ''
+        utils.config.account = account.value
         utils.config.isLogin = true
       }
     }).catch(r => {
