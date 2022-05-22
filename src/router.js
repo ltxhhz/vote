@@ -7,17 +7,33 @@ import manager from './pages/manager.vue';
 
 /** @type {vueRouter.RouteRecordRaw[]} */
 const routes = [{
+  name:'index',
   path: '/',
-  component: index
+  component: index,
+  meta:{
+    title:'投票的网'
+  }
 },{
+  name:'create',
   path:'/create',
-  component:create
+  component:create,
+  meta:{
+    title:'创建投票'
+  }
 },{
+  name:'edit',
   path:'/edit',
-  component:edit
+  component:edit,
+  meta:{
+    title:'编辑投票'
+  }
 },{
+  name:'manager',
   path:'/manager',
-  component:manager
+  component:manager,
+  meta:{
+    title:'投票管理'
+  }
 }]
 
 const router = vueRouter.createRouter({

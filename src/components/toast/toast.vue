@@ -25,7 +25,7 @@ export default defineComponent({
        * @param {string} text 要显示的文字
        * @param {{top:boolean,duration:number}} obj 是否显示在上方
        */
-    $show(text, { top, duration = 1500 }) {
+    $show(text, { top, duration = 1500 }={}) {
       this.toasts.push({ text, top, key: Math.random().toString().substring(2) })
       setTimeout(() => {
         this.toasts.shift()

@@ -29,17 +29,26 @@
   </div>
 </template>
 <script setup>
-import { getCurrentInstance } from 'vue';
+import { getCurrentInstance, onMounted } from 'vue';
+import Cookies from 'js-cookie';
 
-const proxy = getCurrentInstance().proxy
+import utils from '../utils';
+
+const { proxy } = getCurrentInstance()
 function start(e) {
-  proxy.$router.push('/create')
+  const skey = Cookies.get('skey')
+  if (skey) {
+    proxy.$router.push('/create')
+  } else {
+    proxy.$toast('请先登录或注册')
+    console.log(utils)
+    utils.config.login.show()
+  }
 }
 </script>
 
 <style lang="less">
-.index-head{
+.index-head {
   height: 350px;
 }
-
 </style>
