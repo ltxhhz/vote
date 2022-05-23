@@ -143,12 +143,16 @@ function test(e) {
 }
 utils.config.account = Cookies.get('account')
 const skey = Cookies.get('skey')
-verify()
+// verify()
 proxy.$router.afterEach((to, from) => {
-  verify()
+  console.log('router after each',to,from);
+  if (to.name!='404') {
+    verify()
+  }
   document.title = to.meta.title
 })
 function verify(e) {
+  console.log('verify');
   if (!skey) {
     notLogin()
     return false

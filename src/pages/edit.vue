@@ -239,6 +239,21 @@ if (uuid) {
       // skey,
       // account: utils.config.account,
       data: uuid
+    }).then(e=>{
+      console.log(e.body);
+      if (e.body.status==1) {
+        voteData.title = e.body.data.title
+        voteData.start = e.body.data.start
+        voteData.end = e.body.data.end
+        voteData.single = e.body.data.single
+      }else {
+        // proxy.$toast("获取投票信息失败")}
+        proxy.$router.addRoute({
+          name:'404'
+        })
+      }
+    }).catch(r=>{
+      proxy.$toast("获取投票信息失败")
     })
 }
 

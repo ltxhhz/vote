@@ -73,7 +73,7 @@ const { proxy } = getCurrentInstance()
 const props = defineProps({
   modelValue: {
     type: String,
-    default: ''
+    default: 'login'
   }
 })
 const emits = defineEmits(['update:modelValue'])
