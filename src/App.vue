@@ -118,7 +118,6 @@ BScroll.use(ScrollBar)
 
 const { proxy } = getCurrentInstance()
 const showLogin = ref('')
-utils.config = reactive(utils.config)
 
 let bs
 
@@ -141,18 +140,18 @@ onMounted(() => {
 function test(e) {
   console.log(proxy.$route.params.uuid)
 }
-utils.config.account = Cookies.get('account')
-const skey = Cookies.get('skey')
 // verify()
 proxy.$router.afterEach((to, from) => {
-  console.log('router after each',to,from);
-  if (to.name!='404') {
+  console.log('router after each', to, from);
+  if (to.name != '404') {
     verify()
   }
   document.title = to.meta.title
 })
 function verify(e) {
-  console.log('verify');
+  const skey = Cookies.get('skey'),
+    account = Cookies.get('account')
+  console.log('verify', skey);
   if (!skey) {
     notLogin()
     return false
@@ -160,11 +159,13 @@ function verify(e) {
   superagent.post('/api/verify')
     .send({
       skey,
-      account: utils.config.account
+      account
     }).then(e => {
       console.log('验证结果', e.body);
       if (e.body.data) {
         utils.config.isLogin = true
+        utils.config.account = account
+        utils.config.skey = skey
       } else {
         notLogin()
       }

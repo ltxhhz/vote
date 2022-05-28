@@ -114,6 +114,7 @@ function login() {
         proxy.$toast('登录成功')
         show1.value = ''
         utils.config.account = account.value
+        utils.config.skey = e.body.data.skey
         utils.config.isLogin = true
       }
     }).catch(r => {

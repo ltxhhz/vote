@@ -1,3 +1,7 @@
+import { reactive } from 'vue';
 export default {
-  config: {}
+  config: reactive({
+    account:'',
+    skey:''
+  })
 }
