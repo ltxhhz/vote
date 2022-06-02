@@ -74,8 +74,7 @@ function singleChange(e) {
   if (!data.single) data.min = data.max = ''
 }
 function next(e) {
-  const skey = Cookies.get('skey')
-  if (skey || 1) {
+  if (utils.config.skey) {
     const s = JSON.parse(JSON.stringify(toRaw(data)))
     s.start = +new Date(s.start)
     s.end = +new Date(s.end)
@@ -86,8 +85,6 @@ function next(e) {
     if (!s.description) delete s.description
     superagent.post('/api/create')
     .send({
-      skey,
-      account:utils.config.account,
       data:s
     }).then(e=>{
       console.log(e.body);

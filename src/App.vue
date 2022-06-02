@@ -138,7 +138,10 @@ onMounted(() => {
   utils.config.login = proxy.$refs.login1
 })
 function test(e) {
-  console.log(proxy.$route.params.uuid)
+  // console.log(proxy.$route.params.uuid)
+  proxy.$router.push({
+    name: '404'
+  })
 }
 // verify()
 proxy.$router.afterEach((to, from) => {
@@ -156,11 +159,8 @@ function verify(e) {
     notLogin()
     return false
   }
-  superagent.post('/api/verify')
-    .send({
-      skey,
-      account
-    }).then(e => {
+  superagent.get('/api/verify')
+    .then(e => {
       console.log('验证结果', e.body);
       if (e.body.data) {
         utils.config.isLogin = true

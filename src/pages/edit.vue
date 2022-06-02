@@ -34,7 +34,7 @@
               d="M512.041444 373.060601c-76.598562 0-138.954749 62.325487-138.954749 138.939399 0 76.598562 62.356187 138.954749 138.954749 138.954749 76.598562 0 138.954749-62.356187 138.954749-138.954749C650.996193 435.386088 588.640006 373.060601 512.041444 373.060601zM512.041444 595.372849c-45.935192 0-83.371826-37.406958-83.371826-83.371826 0-45.950542 37.436634-83.356476 83.371826-83.356476 45.964868 0 83.373873 37.406958 83.373873 83.356476C595.414293 557.965891 558.006312 595.372849 512.041444 595.372849z"
               p-id="2977" fill="#41403e"></path>
           </svg>
-          <span class="mx-1">0</span>
+          <span class="mx-1">{{ visit }}</span>
           查看
         </div>
         <div class="d-inline-flex align-items-center">
@@ -44,7 +44,7 @@
               d="M691.2 928.2V543.1c0-32.7 26.5-59.3 59.2-59.3h118.5c32.7 0 59.3 26.5 59.3 59.2V928.2h-237z m192.6-385.1c0-8.2-6.6-14.8-14.8-14.8H750.5c-8.2 0-14.8 6.6-14.9 14.7v340.8h148.2V543.1zM395 157.8c-0.1-32.6 26.3-59.2 58.9-59.3h118.8c32.6 0 59.1 26.5 59.1 59.1v770.6H395V157.8z m44.4 725.9h148V157.9c0-8.1-6.5-14.7-14.7-14.8H454.1c-8.1 0.1-14.7 6.7-14.7 14.8v725.8zM98.6 394.9c0-32.7 26.5-59.2 59.2-59.3h118.5c32.7-0.1 59.3 26.4 59.3 59.1v533.5h-237V394.9z m44.5 488.8h148.2V394.9c0-8.2-6.7-14.8-14.8-14.8H158c-8.2 0-14.8 6.6-14.9 14.7v488.9z"
               p-id="4143" fill="#41403e"></path>
           </svg>
-          <span class="mx-1">0</span>
+          <span class="mx-1">{{ part }}</span>
           参与
         </div>
       </div>
@@ -89,8 +89,9 @@
               </div>
               <div class="form-group d-flex flex-column">
                 <label for="option-image">选项图片</label>
-                <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*" >
-                <div v-if="option.imgUrl" class="e-container e-preview position-relative overflow-hidden">
+                <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
+                <div v-if="option.imgUrl"
+                  class="e-container e-preview position-relative overflow-hidden d-flex flex-column justify-content-center align-items-center align-self-center">
                   <img :src="option.imgUrl" alt="选项图片" :title="option.imgName">
                   <div class="e-tools position-absolute top-0 right-0 bottom-0 left-0 ">
                     <button class="e-btn-close btn-close d-flex justify-content-center align-items-center"
@@ -112,7 +113,9 @@
               <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
               <div class="d-flex justify-content-center">
                 <label for="add-option" class="paper-btn btn-muted mr-3">关闭</label>
-                <label for="add-option" class="paper-btn btn-primary" @click="addOption">添加</label>
+                <label for="add-option" class="paper-btn btn-primary" @click="addOption"
+                  v-show="option.title">添加</label>
+                <button class="btn-primary" v-show="!option.title" disabled>添加</button>
               </div>
             </div>
           </div>
@@ -172,19 +175,54 @@
         </div>
       </div>
     </div>
-    <div class="paper container container-md mt-3 d-flex align-items-center">
-      <svg t="1652531437925" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-        p-id="1905" width="32" height="32">
-        <path
-          d="M512 958.016C266.08 958.016 65.984 757.952 65.984 512 65.984 266.08 266.08 65.984 512 65.984c245.952 0 446.016 200.064 446.016 446.016C958.016 757.952 757.952 958.016 512 958.016zM512 129.984C301.344 129.984 129.984 301.344 129.984 512c0 210.624 171.36 382.016 382.016 382.016 210.624 0 382.016-171.36 382.016-382.016C894.016 301.344 722.624 129.984 512 129.984z"
-          p-id="1906"></path>
-        <path d="M512 304m-48 0a1.5 1.5 0 1 0 96 0 1.5 1.5 0 1 0-96 0Z" p-id="1907"></path>
-        <path
-          d="M512 768c-17.664 0-32-14.304-32-32l0-288c0-17.664 14.336-32 32-32s32 14.336 32 32l0 288C544 753.696 529.664 768 512 768z"
-          p-id="1908"></path>
-      </svg>
-      <span>在上方工具栏添加选项</span>
+    <div class="paper container container-md mt-3">
+      <div v-if="!voteData.options || !voteData.options.length" class="d-flex align-items-center">
+        <svg t="1652531437925" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          p-id="1905" width="32" height="32">
+          <path
+            d="M512 958.016C266.08 958.016 65.984 757.952 65.984 512 65.984 266.08 266.08 65.984 512 65.984c245.952 0 446.016 200.064 446.016 446.016C958.016 757.952 757.952 958.016 512 958.016zM512 129.984C301.344 129.984 129.984 301.344 129.984 512c0 210.624 171.36 382.016 382.016 382.016 210.624 0 382.016-171.36 382.016-382.016C894.016 301.344 722.624 129.984 512 129.984z"
+            p-id="1906"></path>
+          <path d="M512 304m-48 0a1.5 1.5 0 1 0 96 0 1.5 1.5 0 1 0-96 0Z" p-id="1907"></path>
+          <path
+            d="M512 768c-17.664 0-32-14.304-32-32l0-288c0-17.664 14.336-32 32-32s32 14.336 32 32l0 288C544 753.696 529.664 768 512 768z"
+            p-id="1908"></path>
+        </svg>
+        <span>点击上方按钮添加选项</span>
+      </div>
+      <div v-else v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
+        class="form-group d-flex align-items-center option">
+        <label :for="item.optionId" class="paper-radio flex-fill mb-0">
+          <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
+            v-model="item.checked" :disabled="disableOption">
+          <span>{{ item.content }}</span>
+        </label>
+        <label v-if="item.image" class="option-image cursor-pointer" popover-left="点击放大" for="preview-image"
+          @click.stop="preview(item.image)">
+          <img :src="item.image" alt="img">
+        </label>
+      </div>
+      <div class="d-flex justify-content-center">
+        <button class="d-flex align-items-center justify-content-around" @click="submit" :disabled="submitting">
+          <span class="pr-2">{{ haveVoted ? '已参与' : submitting ? '投票中' : '参与投票' }}</span>
+          <svg t="1654176438861" class="icon " :class="{ 'submit-loading': submitting }" viewBox="0 0 1024 1024"
+            version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4311" width="32" height="32">
+            <path
+              d="M161.9 842.2C66.8 747.1 18.8 622.9 22.1 493.5 25.3 369.1 76 249.1 163.4 161.7 250.7 74.3 370 24.3 493.8 22 622 19.6 745.5 68.3 840.6 163.4c197.3 197.3 216.2 536.6 38.6 714.1-178 178.2-520.6 161.4-717.3-35.3z m687.2 5.2c160.1-160.1 142.7-472.5-38.6-653.8-86.9-86.9-199.2-131.1-316-128.9-112.8 2.1-221.5 47.7-301 127.2C114 271.5 67.6 381.1 64.7 494.6 61.7 612.5 105.3 725.3 192 812c180.7 180.7 496.4 196.1 657.1 35.4zM263 741c-143.4-143.4-149.5-360.6-15.2-494.9C381.3 112.7 594 121.6 738.2 265.8c70.5 70.5 115.2 163.9 124.7 258.2 9.9 97.9-18.6 189-83.4 253.8-64.8 64.8-157 94.3-255.7 85.7-96-8.4-190.5-52.2-260.8-122.5z m30.2-30.1C356.4 774 441.5 813.5 527.5 821c86.8 7.6 166.5-17.9 221.9-73.3 55.2-55.2 79.8-133.7 71.1-219.3-8.5-84.5-48.8-168.8-112.4-232.4C580 167.9 394.2 160.1 278 276.3c-117.2 117.2-111.9 307.5 15.2 434.6z m42.1-42.2c-92.3-92.3-98.9-257.2-10.5-345.6 43.4-43.4 103.7-62.6 168-56.4 61 5.9 121.1 34.3 165.7 78.9 91.4 91.5 93.7 226.6 4.5 315.7-43.6 43.6-102 69-162.1 71.4-62 2.5-121.2-19.6-165.6-64z m163.9 21.4c49.4-2 97.7-23 133.6-59 72.3-72.3 70.5-180.4-4.5-255.4-37.6-37.6-88.5-61.6-139.6-66.6-52.1-5-99.8 10.1-133.8 44.1-71.2 71.2-65.6 209.1 10.5 285.3 35.9 35.8 83.5 53.6 133.8 51.6zM566.7 565c-21.2 21.2-47.8 37-74 43.4-30.4 7.4-58.8 2-78.9-18-38.9-38.9-28.7-116.9 16.3-161.9 43.7-43.7 111.9-45.7 151.6-6 19.4 19.4 27.5 44.9 23.6 71.8-3.7 24.6-17.3 49.3-38.6 70.7z m-3.6-77c2-13.7-1.8-25.7-11.5-35.4-22.6-22.6-63.8-21.5-91.3 6-29.8 29.8-36.5 81.3-16.3 101.5 8.4 8.4 21.6 10.9 38.6 6.8 18.2-4.5 38-16.2 53.9-32.1 15.2-15.2 24.3-31.8 26.6-46.8z"
+              fill="" p-id="4312"></path>
+          </svg></button>
+      </div>
+
+
     </div>
+    <teleport to="body">
+      <input class="modal-state" id="preview-image" type="checkbox">
+      <div class="modal">
+        <label class="modal-bg" for="preview-image"></label>
+        <div class="modal-body preview-image">
+          <img :src="previewImg" alt="preview">
+        </div>
+      </div>
+    </teleport>
   </template>
 </template>
 <script setup>
@@ -193,6 +231,7 @@ import QRCode from 'qrcode';
 import ClipboardJS from 'clipboard';
 import superagent from 'superagent'
 import dayjs from 'dayjs';
+import lodash from 'lodash';
 
 import utils from '../utils';
 
@@ -215,14 +254,23 @@ const dragging = ref(false),
     title: 'title',
     start: +dayjs(),
     end: +dayjs().add(1, 'day'),
-    single: true
+    single: true,
+    options: []
   }),
+  disableOption = ref(false),
+  visit = ref(0),
+  part = ref(0),
   level = ref(2),
-  option=reactive({
-    title:'',
-    imgUrl:'',
-    imgName:''
-  })
+  option = reactive({
+    title: '',
+    img: null,
+    imgUrl: '',
+    imgName: ''
+  }),
+  previewImg = ref(''),
+  checkedNum = ref(0),
+  haveVoted = ref(false),
+  submitting = ref(false)
 const uuid = proxy.$route.params.uuid
 let cjs
 
@@ -234,14 +282,13 @@ function init(uuid1 = uuid) {
   if (uuid1) {
     superagent.post('/api/content')
       .send({
-        skey: utils.config.skey,
-        account: utils.config.account,
         data: uuid1
       }).then(e => {
         console.log(e.body);
         if (e.body.status == 1) {
           if (!e.body.data) {
-            proxy.$router.addRoute({
+            console.log(404);
+            proxy.$router.push({
               name: '404'
             })
           } else {
@@ -249,7 +296,15 @@ function init(uuid1 = uuid) {
             voteData.start = e.body.data.start
             voteData.end = e.body.data.end
             voteData.single = e.body.data.single
+            e.body.data.options.forEach(e1 => {
+              e1.checked = false
+            });
+            e.body.data.options && (voteData.options = e.body.data.options)
+
+            visit.value = e.body.data.visit
+            part.value = e.body.data.part
             level.value = utils.config.account ? (e.body.data.account == utils.config.account) ? 0 : 1 : 2
+            haveVoted.value = !!e.body.data.haveVoted
           }
         } else {
           proxy.$toast("获取投票信息失败")
@@ -258,7 +313,7 @@ function init(uuid1 = uuid) {
         proxy.$toast("获取投票信息失败")
       })
   } else {
-    proxy.$router.addRoute({
+    proxy.$router.push({
       name: '404'
     })
   }
@@ -283,6 +338,20 @@ watch(() => utils.config.skey, (n, o) => {
   console.log('登录了', n, o);
   init()
 })
+const optionClick = lodash.debounce(function (e) {
+  console.log(e, voteData.options[e].checked);
+  console.log(voteData.options)
+  countChecked()
+}, 100)
+
+function countChecked() {
+  let n = 0
+  voteData.options.forEach(e => {
+    e.checked && n++
+  });
+  checkedNum.value = n
+  return n
+}
 
 function uploadClick(e) {
   proxy.$refs.inputFile.click()
@@ -300,8 +369,9 @@ function uploadDragDrop(e) {
   let { files: [file], types: [type], items: [item] } = e.dataTransfer
   if (file && item.kind == 'file' && /^image\/.+$/.test(item.type) && file.size / 1024 / 1024 < 10) {
     console.log('yes', file);
-    option.imgUrl.value = URL.createObjectURL(file)
-    option.imgName.value = file.name
+    option.img = file
+    option.imgUrl = URL.createObjectURL(file)
+    option.imgName = file.name
     tip.use = 'success'
   } else {
     console.log('只接受图片，且大小不超过10mb');
@@ -309,12 +379,33 @@ function uploadDragDrop(e) {
   }
   console.log(e.dataTransfer.files.length, e.dataTransfer.types, e.dataTransfer.items[0]);
 }
+function resetAddOption() {
+  removeImage()
+  option.img = null
+  option.imgName = option.imgUrl = option.title = ''
+}
 function removeImage(e) {
-  option.imgUrl.value = option.imgName.value = ''
+  option.imgUrl = option.imgName = ''
   tip.use = 'default'
 }
 function addOption(e) {
-  console.log('save');
+  console.log('add', option);
+  const req = superagent.post('/api/addOption')
+    .field({
+      title: option.title,
+      uuid,
+    })
+  if (option.imgUrl) req.attach('image', option.img, option.imgName)
+  req.then(e => {
+    console.log(e.body);
+    if (e.body.status) {
+      e.body.data.checked = false
+      voteData.options.push(e.body.data)
+      resetAddOption()
+    } else {
+      proxy.$toast('添加失败，请重试')
+    }
+  }).catch(err => { })
 }
 function saveConfig(e) {
   console.log('save');
@@ -326,6 +417,35 @@ function createLinkImg(e) {
   }).catch(err => {
     proxy.$toast('生成二维码失败')
   })
+}
+function preview(e) {
+  previewImg.value = e
+}
+function submit() {
+  submitting.value = true
+  superagent.post('/api/vote')
+    .send({
+      uuid,
+      checked: voteData.options.filter(item => item.checked).map(item => item.optionId)
+    })
+    .then(e => {
+      if (e.body.status) {
+        haveVoted.value = true
+        proxy.$toast("投票成功")
+      } else {
+        if (e.body.msg) {
+          proxy.$toast(e.body.msg)
+          //过期状态
+          //统一管理状态
+        }else {
+          proxy.$toast("投票失败，请重试")
+          submitting.value = false
+        }
+      }
+    }).catch(err => {
+      proxy.$toast("投票失败，请重试")
+      submitting.value = false
+    })
 }
 </script>
 
@@ -416,5 +536,37 @@ svg path {
 .e-qrcode-container {
   max-width: 13rem;
   max-height: 13rem;
+}
+
+
+.option {
+  height: 2rem;
+
+  .option-image {
+    height: 100%;
+
+    img {
+      height: 100%;
+    }
+  }
+}
+
+.preview-image {
+  max-width: 35rem;
+  max-height: 35rem;
+
+  image {
+    height: 100%;
+  }
+}
+
+.submit-loading {
+  animation: fadenum 3s infinite;
+
+  @keyframes fadenum {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }
 </style>

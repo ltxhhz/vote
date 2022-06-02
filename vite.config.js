@@ -8,7 +8,8 @@ export default defineConfig({
   plugins: [vue()],
   server:{
     proxy:{
-      '/api':host
+      '/api':host,
+      '/image':host
     }
   }
 })
