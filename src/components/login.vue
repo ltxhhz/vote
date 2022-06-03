@@ -18,7 +18,7 @@
             @keypress.stop.enter="login">
         </div>
         <div class="row mb-0">
-          <button @click="login" class="col-12 xs-6" :disabled="!account || !password">登录</button>
+          <button @click="login" class="col-12 xs-6" :disabled="dis || !account || !password">登录</button>
           <div
             class="form-group mb-0 user-select-none col-12 xs-6 d-inline-flex align-items-center justify-content-center">
             <label for="remember" class="paper-check m-0" popover-bottom="不是自己的电脑不要勾选此选项">
@@ -45,7 +45,9 @@
           </div>
         </div>
         <div class="row justify-content-center mb-0">
-          <button class="col-12 xs-6" :disabled="!pass">注册</button>
+          <button class="col-12 xs-6"
+            :disabled="dis || account && password && passwordRetype && password != passwordRetype"
+            @click="register">注册</button>
         </div>
         <!-- </div> -->
       </div>
@@ -66,7 +68,7 @@ const account = ref(''),
   passwordRetype = ref(''),
   remember = ref(false),
   info = ref(''),
-  pass = ref(false)
+  dis = ref(false)
 
 const { proxy } = getCurrentInstance()
 
@@ -95,16 +97,14 @@ watch(() => props.modelValue, (n, o) => {
 })
 
 function login() {
+  dis.value = true
   superagent.post('/api/login')
     .send({
       account: account.value,
       password: password.value,
       remember: remember.value
     }).then(e => {
-      console.log(e.body);
-      if (e.body.status == 0) {
-        proxy.$toast('用户名或密码错误')
-      } else {
+      if (e.body.status) {
         Cookies.set('skey', e.body.data.skey, {
           expires: dayjs().add(1, remember.value ? 'month' : 'day').toDate()
         })
@@ -116,10 +116,36 @@ function login() {
         utils.config.account = account.value
         utils.config.skey = e.body.data.skey
         utils.config.isLogin = true
+      } else {
+        if (e.body.msg) proxy.$toast(e.body.msg)
+        else proxy.$toast('用户名或密码错误')
       }
     }).catch(r => {
       console.error(r);
       proxy.$toast('登录错误，请重试')
+    }).finally(() => {
+      dis.value = false
+    })
+}
+function register() {
+  dis.value = true
+  superagent.post('api/register')
+    .send({
+      account: account.value,
+      password: password.value,
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('注册成功，请登录')
+        password.value = passwordRetype.value = ''
+        show1.value = 'login'
+      } else {
+        if (e.body.msg) proxy.$toast(e.body.msg)
+        else proxy.$toast('注册失败，请重试')
+      }
+    }).catch(r => {
+      proxy.$toast('注册错误，请重试')
+    }).finally(() => {
+      dis.value = false
     })
 }
 </script>

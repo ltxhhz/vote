@@ -70,8 +70,8 @@
       </div>
     </div>
   </div>
-  <template v-if="level == 0">
-    <div class="paper container container-md">
+  <template v-if="level < 2">
+    <div v-if="level == 0" class="paper container container-md">
       <div class="row mb-0">
         <div class="e-func col-12 xs-4">
           <label class="paper-btn btn-block btn-primary-outline text-center" for="add-option">添加选项</label>
@@ -187,31 +187,34 @@
             d="M512 768c-17.664 0-32-14.304-32-32l0-288c0-17.664 14.336-32 32-32s32 14.336 32 32l0 288C544 753.696 529.664 768 512 768z"
             p-id="1908"></path>
         </svg>
-        <span>点击上方按钮添加选项</span>
+        <span>{{ level == 0 ? '点击上方按钮添加选项' : '暂无选项' }}</span>
       </div>
-      <div v-else v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
-        class="form-group d-flex align-items-center option">
-        <label :for="item.optionId" class="paper-radio flex-fill mb-0">
-          <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
-            v-model="item.checked" :disabled="disableOption">
-          <span>{{ item.content }}</span>
-        </label>
-        <label v-if="item.image" class="option-image cursor-pointer" popover-left="点击放大" for="preview-image"
-          @click.stop="preview(item.image)">
-          <img :src="item.image" alt="img">
-        </label>
-      </div>
-      <div class="d-flex justify-content-center">
-        <button class="d-flex align-items-center justify-content-around" @click="submit" :disabled="submitting">
-          <span class="pr-2">{{ haveVoted ? '已参与' : submitting ? '投票中' : '参与投票' }}</span>
-          <svg t="1654176438861" class="icon " :class="{ 'submit-loading': submitting }" viewBox="0 0 1024 1024"
-            version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4311" width="32" height="32">
-            <path
-              d="M161.9 842.2C66.8 747.1 18.8 622.9 22.1 493.5 25.3 369.1 76 249.1 163.4 161.7 250.7 74.3 370 24.3 493.8 22 622 19.6 745.5 68.3 840.6 163.4c197.3 197.3 216.2 536.6 38.6 714.1-178 178.2-520.6 161.4-717.3-35.3z m687.2 5.2c160.1-160.1 142.7-472.5-38.6-653.8-86.9-86.9-199.2-131.1-316-128.9-112.8 2.1-221.5 47.7-301 127.2C114 271.5 67.6 381.1 64.7 494.6 61.7 612.5 105.3 725.3 192 812c180.7 180.7 496.4 196.1 657.1 35.4zM263 741c-143.4-143.4-149.5-360.6-15.2-494.9C381.3 112.7 594 121.6 738.2 265.8c70.5 70.5 115.2 163.9 124.7 258.2 9.9 97.9-18.6 189-83.4 253.8-64.8 64.8-157 94.3-255.7 85.7-96-8.4-190.5-52.2-260.8-122.5z m30.2-30.1C356.4 774 441.5 813.5 527.5 821c86.8 7.6 166.5-17.9 221.9-73.3 55.2-55.2 79.8-133.7 71.1-219.3-8.5-84.5-48.8-168.8-112.4-232.4C580 167.9 394.2 160.1 278 276.3c-117.2 117.2-111.9 307.5 15.2 434.6z m42.1-42.2c-92.3-92.3-98.9-257.2-10.5-345.6 43.4-43.4 103.7-62.6 168-56.4 61 5.9 121.1 34.3 165.7 78.9 91.4 91.5 93.7 226.6 4.5 315.7-43.6 43.6-102 69-162.1 71.4-62 2.5-121.2-19.6-165.6-64z m163.9 21.4c49.4-2 97.7-23 133.6-59 72.3-72.3 70.5-180.4-4.5-255.4-37.6-37.6-88.5-61.6-139.6-66.6-52.1-5-99.8 10.1-133.8 44.1-71.2 71.2-65.6 209.1 10.5 285.3 35.9 35.8 83.5 53.6 133.8 51.6zM566.7 565c-21.2 21.2-47.8 37-74 43.4-30.4 7.4-58.8 2-78.9-18-38.9-38.9-28.7-116.9 16.3-161.9 43.7-43.7 111.9-45.7 151.6-6 19.4 19.4 27.5 44.9 23.6 71.8-3.7 24.6-17.3 49.3-38.6 70.7z m-3.6-77c2-13.7-1.8-25.7-11.5-35.4-22.6-22.6-63.8-21.5-91.3 6-29.8 29.8-36.5 81.3-16.3 101.5 8.4 8.4 21.6 10.9 38.6 6.8 18.2-4.5 38-16.2 53.9-32.1 15.2-15.2 24.3-31.8 26.6-46.8z"
-              fill="" p-id="4312"></path>
-          </svg></button>
-      </div>
-
+      <template v-else>
+        <div v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
+          class="form-group d-flex align-items-center option">
+          <label :for="item.optionId" class="paper-radio flex-fill mb-0" :class="{ disabled: disableOption || haveVoted }">
+            <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
+              v-model="item.checked" :disabled="disableOption || haveVoted">
+            <span>{{ item.content }}</span>
+          </label>
+          <label v-if="item.image" class="option-image cursor-pointer" popover-left="点击放大" for="preview-image"
+            @click.stop="preview(item.image)">
+            <img :src="item.image" alt="img">
+          </label>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button class="d-flex align-items-center justify-content-around" @click="submit"
+            :disabled="submitting || haveVoted">
+            <span class="pr-2">{{ haveVoted ? '已参与' : submitting ? '投票中' : '参与投票' }}</span>
+            <svg t="1654176438861" class="icon " :class="{ 'submit-loading': submitting }" viewBox="0 0 1024 1024"
+              version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4311" width="32" height="32">
+              <path
+                d="M161.9 842.2C66.8 747.1 18.8 622.9 22.1 493.5 25.3 369.1 76 249.1 163.4 161.7 250.7 74.3 370 24.3 493.8 22 622 19.6 745.5 68.3 840.6 163.4c197.3 197.3 216.2 536.6 38.6 714.1-178 178.2-520.6 161.4-717.3-35.3z m687.2 5.2c160.1-160.1 142.7-472.5-38.6-653.8-86.9-86.9-199.2-131.1-316-128.9-112.8 2.1-221.5 47.7-301 127.2C114 271.5 67.6 381.1 64.7 494.6 61.7 612.5 105.3 725.3 192 812c180.7 180.7 496.4 196.1 657.1 35.4zM263 741c-143.4-143.4-149.5-360.6-15.2-494.9C381.3 112.7 594 121.6 738.2 265.8c70.5 70.5 115.2 163.9 124.7 258.2 9.9 97.9-18.6 189-83.4 253.8-64.8 64.8-157 94.3-255.7 85.7-96-8.4-190.5-52.2-260.8-122.5z m30.2-30.1C356.4 774 441.5 813.5 527.5 821c86.8 7.6 166.5-17.9 221.9-73.3 55.2-55.2 79.8-133.7 71.1-219.3-8.5-84.5-48.8-168.8-112.4-232.4C580 167.9 394.2 160.1 278 276.3c-117.2 117.2-111.9 307.5 15.2 434.6z m42.1-42.2c-92.3-92.3-98.9-257.2-10.5-345.6 43.4-43.4 103.7-62.6 168-56.4 61 5.9 121.1 34.3 165.7 78.9 91.4 91.5 93.7 226.6 4.5 315.7-43.6 43.6-102 69-162.1 71.4-62 2.5-121.2-19.6-165.6-64z m163.9 21.4c49.4-2 97.7-23 133.6-59 72.3-72.3 70.5-180.4-4.5-255.4-37.6-37.6-88.5-61.6-139.6-66.6-52.1-5-99.8 10.1-133.8 44.1-71.2 71.2-65.6 209.1 10.5 285.3 35.9 35.8 83.5 53.6 133.8 51.6zM566.7 565c-21.2 21.2-47.8 37-74 43.4-30.4 7.4-58.8 2-78.9-18-38.9-38.9-28.7-116.9 16.3-161.9 43.7-43.7 111.9-45.7 151.6-6 19.4 19.4 27.5 44.9 23.6 71.8-3.7 24.6-17.3 49.3-38.6 70.7z m-3.6-77c2-13.7-1.8-25.7-11.5-35.4-22.6-22.6-63.8-21.5-91.3 6-29.8 29.8-36.5 81.3-16.3 101.5 8.4 8.4 21.6 10.9 38.6 6.8 18.2-4.5 38-16.2 53.9-32.1 15.2-15.2 24.3-31.8 26.6-46.8z"
+                fill="" p-id="4312"></path>
+            </svg>
+          </button>
+        </div>
+      </template>
 
     </div>
     <teleport to="body">
@@ -260,6 +263,7 @@ const dragging = ref(false),
   disableOption = ref(false),
   visit = ref(0),
   part = ref(0),
+  //0 查看、编辑、投票 1查看、投票 2查看
   level = ref(2),
   option = reactive({
     title: '',
@@ -282,12 +286,11 @@ function init(uuid1 = uuid) {
   if (uuid1) {
     superagent.post('/api/content')
       .send({
-        data: uuid1
+        uuid: uuid1
       }).then(e => {
         console.log(e.body);
         if (e.body.status == 1) {
           if (!e.body.data) {
-            console.log(404);
             proxy.$router.push({
               name: '404'
             })
@@ -304,7 +307,15 @@ function init(uuid1 = uuid) {
             visit.value = e.body.data.visit
             part.value = e.body.data.part
             level.value = utils.config.account ? (e.body.data.account == utils.config.account) ? 0 : 1 : 2
+            console.log(level.value);
             haveVoted.value = !!e.body.data.haveVoted
+            if (e.body.data.choice) {
+              /** @type {Array<string>} */
+              let arr = e.body.data.choice.split(',')
+              arr.forEach(e => {
+                voteData.options[e] && (voteData.options[e].checked = true)
+              })
+            }
           }
         } else {
           proxy.$toast("获取投票信息失败")
@@ -437,10 +448,10 @@ function submit() {
           proxy.$toast(e.body.msg)
           //过期状态
           //统一管理状态
-        }else {
+        } else {
           proxy.$toast("投票失败，请重试")
-          submitting.value = false
         }
+        submitting.value = false
       }
     }).catch(err => {
       proxy.$toast("投票失败，请重试")
