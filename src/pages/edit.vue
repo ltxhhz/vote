@@ -65,7 +65,7 @@
       <div class="col-12 sm-4 mb-2 row justify-content-center">
         <span class="mr-1 text-nowrap col-12 sm-6">投票规则</span>
         <div class="col-12">
-          <code class="text-nowrap ">{{ voteData.single ? '单选' : '多选' }}</code>
+          <code class="text-nowrap ">{{ voteData.single ? '单选' : `多选(${voteData.min} - ${voteData.max})` }}</code>
         </div>
       </div>
     </div>
@@ -192,7 +192,8 @@
       <template v-else>
         <div v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
           class="form-group d-flex align-items-center option">
-          <label :for="item.optionId" class="paper-radio flex-fill mb-0" :class="{ disabled: disableOption || haveVoted }">
+          <label :for="item.optionId" class="paper-radio flex-fill mb-0"
+            :class="{ disabled: haveVoted || (voteData.single? (!item.checked):(checkedNum==voteData.max&&!item.checked)) }">
             <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
               v-model="item.checked" :disabled="disableOption || haveVoted">
             <span>{{ item.content }}</span>
@@ -258,6 +259,8 @@ const dragging = ref(false),
     start: +dayjs(),
     end: +dayjs().add(1, 'day'),
     single: true,
+    max:0,
+    min:0,
     options: []
   }),
   disableOption = ref(false),
@@ -299,8 +302,10 @@ function init(uuid1 = uuid) {
             voteData.start = e.body.data.start
             voteData.end = e.body.data.end
             voteData.single = e.body.data.single
+            voteData.max = e.body.data.max
+            voteData.min = e.body.data.min
             e.body.data.options.forEach(e1 => {
-              e1.checked = false
+              e1.checked = e1.disable = false
             });
             e.body.data.options && (voteData.options = e.body.data.options)
 
@@ -350,9 +355,32 @@ watch(() => utils.config.skey, (n, o) => {
   init()
 })
 const optionClick = lodash.debounce(function (e) {
-  console.log(e, voteData.options[e].checked);
-  console.log(voteData.options)
   countChecked()
+  // if (voteData.single) {
+  //   let ind
+  //   if (voteData.options.some((e, i) => {
+  //     if (e.checked) ind = i;
+  //     return e.checked
+  //   })) {
+  //     voteData.options.forEach((e, i) => {
+  //       if (i != ind) e.disable = true
+  //     });
+  //   } else {
+  //     voteData.options.forEach((e, i) => {
+  //       e.disable = false
+  //     });
+  //   }
+  // } else {
+  //   if (checkedNum.value == voteData.max) {
+  //     voteData.options.forEach((e, i) => {
+  //       if (!e.checked) e.disable = true
+  //     });
+  //   } else {
+  //     voteData.options.forEach((e, i) => {
+  //       e.disable = false
+  //     });
+  //   }
+  // }
 }, 100)
 
 function countChecked() {
@@ -369,11 +397,9 @@ function uploadClick(e) {
 }
 function uploadDragEnter(e) {
   dragging.value = true
-  console.log(1);
 }
 function uploadDragLeave(e) {
   dragging.value = false
-  console.log(2);
 }
 function uploadDragDrop(e) {
   dragging.value = false
