@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-fill fs-5 ">投票编辑</div>
       <div class="col-1 text-center">
-        <button class="btn-secondary p-0" style="width: 32px;height:32px;">
+        <label class="paper-btn btn-secondary p-0" style="width: 32px;height:32px;" for="edit-modal">
           <svg t="1652500372645" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="1910" width="16" height="16">
             <path
@@ -16,7 +16,66 @@
               d="M800.037628 607.897867c-52.980346 0-95.983874-43.003528-95.983874-95.983874s43.003528-95.983874 95.983874-95.983874 95.983874 43.003528 95.983874 95.983874S852.84596 607.897867 800.037628 607.897867z"
               p-id="1913" fill="#0057ab"></path>
           </svg>
-        </button>
+        </label>
+        <teleport to="body">
+          <input class="modal-state" id="edit-modal" type="checkbox">
+          <div class="modal">
+            <div class="modal-body">
+              <label class="btn-close" for="edit-modal">X</label>
+              <!-- <h4 class="modal-title">Modal Title</h4> -->
+              <div class="row">
+                <div class="form-group col-12">
+                  <label for="voteTitle">投票标题</label>
+                  <input class="w-100" type="text" placeholder="投票标题(必填)" id="voteTitle" v-model="voteDataEdit.title">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-12 md-6">
+                  <label for="startTime">开始时间</label>
+                  <input type="datetime-local" class="w-100" id="startTime" v-model="start">
+                </div>
+                <div class="form-group col-12 md-6">
+                  <label for="endTime">结束时间</label>
+                  <input type="datetime-local" class="w-100" id="endTime" v-model="end">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-4 mb-0 pb-0" style="height: 80px">
+                  <label for="single" class="paper-switch-tile">
+                    <input id="single" name="single" type="checkbox" v-model="voteDataEdit.single" @change="singleChange" />
+                    <div class="paper-switch-tile-card border">
+                      <div class="paper-switch-tile-card-front border background-primary">多选</div>
+                      <div class="paper-switch-tile-card-back border">单选</div>
+                    </div>
+                  </label>
+                </div>
+                <div class="form-group col-4 mb-0 pb-0">
+                  <label for="min">最少选</label>
+                  <input class="input-block" placeholder="无限制" type="number" id="min" :disabled="voteDataEdit.single"
+                    v-model="voteDataEdit.min">
+                </div>
+                <div class="form-group col-4 mb-0 pb-0">
+                  <label for="max">最多选</label>
+                  <input class="input-block" placeholder="无限制" type="number" id="max" :disabled="voteDataEdit.single"
+                    v-model="voteDataEdit.max">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group col-12 ">
+                  <div class="form-group mb-0">
+                    <label for="description">投票说明</label>
+                    <textarea class="w-100 " id="description" placeholder="投票说明(可空)" v-model="voteData.description"
+                      style="resize:vertical;min-height: 100px;"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <label for="edit-modal" class="paper-btn">关闭</label>
+                <button>保存</button>
+              </div>
+            </div>
+          </div>
+        </teleport>
       </div>
     </div>
     <div class="row">
@@ -65,7 +124,7 @@
       <div class="col-12 sm-4 mb-2 row justify-content-center">
         <span class="mr-1 text-nowrap col-12 sm-6">投票规则</span>
         <div class="col-12">
-          <code class="text-nowrap ">{{ voteData.single ? '单选' : `多选(${voteData.min} - ${voteData.max})` }}</code>
+          <code class="text-nowrap ">{{ voteData.single ? '单选' : `多选 [${voteData.min} - ${voteData.max}]` }}</code>
         </div>
       </div>
     </div>
@@ -193,7 +252,7 @@
         <div v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
           class="form-group d-flex align-items-center option">
           <label :for="item.optionId" class="paper-radio flex-fill mb-0"
-            :class="{ disabled: haveVoted || (voteData.single? (!item.checked):(checkedNum==voteData.max&&!item.checked)) }">
+            :class="{ disabled: haveVoted || (voteData.single ? (!item.checked) : (checkedNum == voteData.max && !item.checked)) }">
             <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
               v-model="item.checked" :disabled="disableOption || haveVoted">
             <span>{{ item.content }}</span>
@@ -259,9 +318,17 @@ const dragging = ref(false),
     start: +dayjs(),
     end: +dayjs().add(1, 'day'),
     single: true,
-    max:0,
-    min:0,
+    max: 0,
+    min: 0,
     options: []
+  }),
+  voteDataEdit = reactive({
+    title: voteData.title,
+    start: dayjs(voteData.start).format('YYYY-MM-DDTHH:mm'),
+    end: dayjs(voteData.end).format('YYYY-MM-DDTHH:mm'),
+    single: voteData.single,
+    max: voteData.max,
+    min: voteData.min
   }),
   disableOption = ref(false),
   visit = ref(0),
@@ -304,6 +371,7 @@ function init(uuid1 = uuid) {
             voteData.single = e.body.data.single
             voteData.max = e.body.data.max
             voteData.min = e.body.data.min
+            voteEditInit()
             e.body.data.options.forEach(e1 => {
               e1.checked = e1.disable = false
             });
@@ -443,6 +511,17 @@ function addOption(e) {
       proxy.$toast('添加失败，请重试')
     }
   }).catch(err => { })
+}
+function voteEditInit() {
+  voteDataEdit.title = voteData.title
+  voteDataEdit.start = dayjs(voteData.start).format('YYYY-MM-DDTHH:mm')
+  voteDataEdit.end = dayjs(voteData.end).format('YYYY-MM-DDTHH:mm')
+  voteDataEdit.single = voteData.single
+  voteDataEdit.max = voteData.max
+  voteDataEdit.min = voteData.min
+}
+function voteEditSave() {
+
 }
 function saveConfig(e) {
   console.log('save');
