@@ -3,7 +3,8 @@
     <div class="row">
       <div class="col-fill fs-5 ">投票编辑</div>
       <div class="col-1 text-center">
-        <label class="paper-btn btn-secondary p-0" style="width: 32px;height:32px;" for="edit-modal">
+        <label v-if="level == 0" class="paper-btn btn-secondary p-0" style="width: 32px;height:32px;" for="edit-modal"
+          @click="voteEditInit">
           <svg t="1652500372645" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="1910" width="16" height="16">
             <path
@@ -32,17 +33,18 @@
               <div class="row">
                 <div class="form-group col-12 md-6">
                   <label for="startTime">开始时间</label>
-                  <input type="datetime-local" class="w-100" id="startTime" v-model="start">
+                  <input type="datetime-local" class="w-100" id="startTime" v-model="voteDataEdit.start">
                 </div>
                 <div class="form-group col-12 md-6">
                   <label for="endTime">结束时间</label>
-                  <input type="datetime-local" class="w-100" id="endTime" v-model="end">
+                  <input type="datetime-local" class="w-100" id="endTime" v-model="voteDataEdit.end">
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col-4 mb-0 pb-0" style="height: 80px">
                   <label for="single" class="paper-switch-tile">
-                    <input id="single" name="single" type="checkbox" v-model="voteDataEdit.single" @change="singleChange" />
+                    <input id="single" name="single" type="checkbox" v-model="voteDataEdit.single"
+                      @change="singleChange" />
                     <div class="paper-switch-tile-card border">
                       <div class="paper-switch-tile-card-front border background-primary">多选</div>
                       <div class="paper-switch-tile-card-back border">单选</div>
@@ -71,15 +73,19 @@
               </div>
               <div class="d-flex justify-content-between">
                 <label for="edit-modal" class="paper-btn">关闭</label>
-                <button>保存</button>
+                <button @click="voteEditSave">保存</button>
+                <button class="btn-danger-outline" @click="deleteVote">删除投票</button>
               </div>
             </div>
           </div>
         </teleport>
       </div>
     </div>
-    <div class="row">
+    <div class="row mb-1">
       <div class="col-12 text-center">{{ voteData.title }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12 text-center text-muted" style="font-size: 15px;">{{ voteData.description }}</div>
     </div>
     <div class="row">
       <div class="col-12 text-center text-muted e-sub">
@@ -133,54 +139,59 @@
     <div v-if="level == 0" class="paper container container-md">
       <div class="row mb-0">
         <div class="e-func col-12 xs-4">
-          <label class="paper-btn btn-block btn-primary-outline text-center" for="add-option">添加选项</label>
-          <input class="modal-state" id="add-option" type="checkbox">
-          <div class="modal">
-            <!-- <label class="modal-bg" for="add-option"></label> -->
-            <div class="modal-body container container-sm">
-              <label class="btn-close" for="add-option">X</label>
-              <h4 class="modal-title">添加选项</h4>
-              <hr>
-              <!-- <div class=""> -->
-              <div class="form-group">
-                <label for="startTime">选项内容</label>
-                <input type="text" class="w-100" id="option-content" placeholder="选项内容(必填)" v-model="option.title">
-              </div>
-              <div class="form-group d-flex flex-column">
-                <label for="option-image">选项图片</label>
-                <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
-                <div v-if="option.imgUrl"
-                  class="e-container e-preview position-relative overflow-hidden d-flex flex-column justify-content-center align-items-center align-self-center">
-                  <img :src="option.imgUrl" alt="选项图片" :title="option.imgName">
-                  <div class="e-tools position-absolute top-0 right-0 bottom-0 left-0 ">
-                    <button class="e-btn-close btn-close d-flex justify-content-center align-items-center"
-                      @click="removeImage"></button>
+          <label class="paper-btn btn-block btn-primary-outline text-center" for="add-option"
+            @click="openAddOption">添加选项</label>
+          <teleport to="body">
+            <input class="modal-state" id="add-option" type="checkbox">
+            <div class="modal">
+              <!-- <label class="modal-bg" for="add-option"></label> -->
+              <div class="modal-body container container-sm">
+                <label class="btn-close" for="add-option">X</label>
+                <h4 class="modal-title">添加选项</h4>
+                <hr>
+                <!-- <div class=""> -->
+                <div class="form-group">
+                  <label for="startTime">选项内容</label>
+                  <input type="text" class="w-100" id="option-content" placeholder="选项内容(必填)" v-model="option.title">
+                </div>
+                <div class="form-group d-flex flex-column">
+                  <label for="option-image">选项图片</label>
+                  <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
+                  <div v-if="option.imgUrl"
+                    class="e-container e-preview position-relative overflow-hidden d-flex flex-column justify-content-center align-items-center align-self-center">
+                    <img :src="option.imgUrl" alt="选项图片" :title="option.imgName">
+                    <div class="e-tools position-absolute top-0 right-0 bottom-0 left-0 ">
+                      <button class="e-btn-close btn-close d-flex justify-content-center align-items-center"
+                        @click="removeImage"></button>
+                    </div>
+                  </div>
+                  <div v-else
+                    class="e-img-upload e-container cursor-pointer d-flex flex-column justify-content-center align-items-center align-self-center"
+                    :class="{ 'child-borders': dragging }" @click="uploadClick" @dragenter.prevent="uploadDragEnter"
+                    @dragleave.prevent="uploadDragLeave" @drop.prevent="uploadDragDrop" @dragover.prevent>
+                    <div class="d-flex flex-column justify-content-center align-items-center m-2 w-100 h-100 pe-none"
+                      :class="{ 'border-dashed border-thick': dragging }">
+                      <div class="" style="font-size: 18px;">拖放到此或点击上传</div>
+                      <div class="text-muted" style="font-size: 13px;">最多一张图，大小限制10mb</div>
+                    </div>
                   </div>
                 </div>
-                <div v-else
-                  class="e-img-upload e-container cursor-pointer d-flex flex-column justify-content-center align-items-center align-self-center"
-                  :class="{ 'child-borders': dragging }" @click="uploadClick" @dragenter.prevent="uploadDragEnter"
-                  @dragleave.prevent="uploadDragLeave" @drop.prevent="uploadDragDrop" @dragover.prevent>
-                  <div class="d-flex flex-column justify-content-center align-items-center m-2 w-100 h-100 pe-none"
-                    :class="{ 'border-dashed border-thick': dragging }">
-                    <div class="" style="font-size: 18px;">拖放到此或点击上传</div>
-                    <div class="text-muted" style="font-size: 13px;">最多一张图，大小限制10mb</div>
-                  </div>
+                <!-- </div> -->
+                <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
+                <div class="d-flex justify-content-center">
+                  <button v-if="~editOptionIndex" class="btn-danger-outline" @click="deleteOption">删除选项</button>
+                  <label for="add-option" class="paper-btn btn-muted mr-3">关闭</label>
+                  <button @click="addOption" v-show="option.title" :disabled="!option.title">{{ ~editOptionIndex ? '修改'
+                      : '添加'
+                  }}</button>
                 </div>
-              </div>
-              <!-- </div> -->
-              <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
-              <div class="d-flex justify-content-center">
-                <label for="add-option" class="paper-btn btn-muted mr-3">关闭</label>
-                <label for="add-option" class="paper-btn btn-primary" @click="addOption"
-                  v-show="option.title">添加</label>
-                <button class="btn-primary" v-show="!option.title" disabled>添加</button>
               </div>
             </div>
-          </div>
+          </teleport>
         </div>
         <div class="e-func col-12 xs-4">
-          <label class="paper-btn btn-block btn-secondary-outline text-center" for="vote-config">投票设置</label>
+          <label class="paper-btn btn-block btn-secondary-outline text-center" for="vote-config"
+            @click="voteConfigInit">投票设置</label>
           <input class="modal-state" id="vote-config" type="checkbox">
           <div class="modal">
             <!-- <label class="modal-bg" for="vote-config"></label> -->
@@ -192,14 +203,15 @@
                 <div class="form-group col-12 xs-6 md-4 px-2 d-flex align-items-center justify-content-between">
                   <label for="everyday-vote" class="mb-0">每天可投票</label>
                   <label class="paper-switch-2">
-                    <input id="everyday-vote" name="everyday-vote" type="checkbox" v-model="config.everyday" />
+                    <input id="everyday-vote" name="everyday-vote" type="checkbox" v-model="voteConfigEdit.everyday" />
                     <span class="paper-switch-slider round"></span>
                   </label>
                 </div>
                 <div class="form-group col-12 xs-6 md-4 px-2 d-flex align-items-center justify-content-between">
                   <label for="hide-vote-num" class="mb-0">隐藏票数</label>
                   <label class="paper-switch-2">
-                    <input id="hide-vote-num" name="hide-vote-num" type="checkbox" v-model="config.hideVoteNum" />
+                    <input id="hide-vote-num" name="hide-vote-num" type="checkbox"
+                      v-model="voteConfigEdit.hideResult" />
                     <span class="paper-switch-slider round"></span>
                   </label>
                 </div>
@@ -207,7 +219,7 @@
               <div class="modal-text text-center">{{ tip.data[tip.use] }}</div>
               <div class="d-flex justify-content-center">
                 <label for="vote-config" class="paper-btn btn-muted mr-3">关闭</label>
-                <label for="vote-config" class="paper-btn btn-primary" @click="saveConfig">保存</label>
+                <button @click="saveConfig">保存</button>
               </div>
             </div>
           </div>
@@ -249,19 +261,32 @@
         <span>{{ level == 0 ? '点击上方按钮添加选项' : '暂无选项' }}</span>
       </div>
       <template v-else>
-        <div v-for="item, index of voteData.options" :key="item.optionId" @click.stop="optionClick(index)"
-          class="form-group d-flex align-items-center option">
-          <label :for="item.optionId" class="paper-radio flex-fill mb-0"
-            :class="{ disabled: haveVoted || (voteData.single ? (!item.checked) : (checkedNum == voteData.max && !item.checked)) }">
-            <input :type="voteData.single ? 'radio' : 'checkbox'" name="paperRadios" :id="item.optionId"
-              v-model="item.checked" :disabled="disableOption || haveVoted">
-            <span>{{ item.content }}</span>
+        <div v-for="item, index of voteData.options" :key="item.optionId" class="d-flex align-items-center mb-2">
+          <label for="add-option" class="cursor-pointer mr-2 edit-btn" @click.stop="openEditOption(index)">
+            <svg t="1654344626923" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+              p-id="4674" width="32" height="32">
+              <path
+                d="M779.636364 954.181818h-535.272728A174.778182 174.778182 0 0 1 69.818182 779.636364v-535.272728A174.778182 174.778182 0 0 1 244.363636 69.818182H512a34.909091 34.909091 0 0 1 0 69.818182H244.363636A104.96 104.96 0 0 0 139.636364 244.363636v535.272728a104.96 104.96 0 0 0 104.727272 104.727272h535.272728a104.96 104.96 0 0 0 104.727272-104.727272V512a34.909091 34.909091 0 0 1 69.818182 0v267.636364a174.778182 174.778182 0 0 1-174.545454 174.545454z"
+                p-id="4675"></path>
+              <path
+                d="M808.96 149.178182l32.814545 33.047273 33.047273 32.814545-160.581818 160.581818-192 191.767273-72.378182 6.749091 6.749091-72.378182 191.767273-192 160.581818-160.581818m0-79.36a46.545455 46.545455 0 0 0-33.047273 13.730909l-176.872727 176.872727L395.636364 465.454545a23.272727 23.272727 0 0 0-6.749091 14.196364l-13.032728 144.989091a23.272727 23.272727 0 0 0 23.272728 25.367273h2.094545l144.989091-13.032728a23.272727 23.272727 0 0 0 14.196364-6.74909l203.869091-203.869091 176.872727-176.872728a46.545455 46.545455 0 0 0 0-65.861818l-50.036364-50.734545-49.338182-49.338182A46.545455 46.545455 0 0 0 808.96 69.818182z"
+                p-id="4676"></path>
+            </svg>
           </label>
-          <label v-if="item.image" class="option-image cursor-pointer" popover-left="点击放大" for="preview-image"
-            @click.stop="preview(item.image)">
-            <img :src="item.image" alt="img">
-          </label>
+          <div @click.stop="optionClick(index)" class="form-group d-flex align-items-center option flex-fill mb-0">
+            <label :for="item.optionId" class="paper-radio flex-fill mb-0"
+              :class="{ disabled: haveVoted || (voteData.single ? (!item.checked) : (checkedNum == voteData.max && !item.checked)) }">
+              <input :type="voteData.single ? 'radio' : 'checkbox'" :id="item.optionId" v-model="item.checked"
+                :disabled="disableOption || haveVoted">
+              <span>{{ item.content }}</span>
+            </label>
+            <label v-if="item.image" class="option-image cursor-pointer m-0" popover-left="点击放大" for="preview-image"
+              @click.stop="preview(item.image)">
+              <img :src="item.image" alt="img">
+            </label>
+          </div>
         </div>
+
         <div class="d-flex justify-content-center">
           <button class="d-flex align-items-center justify-content-around" @click="submit"
             :disabled="submitting || haveVoted">
@@ -289,7 +314,7 @@
   </template>
 </template>
 <script setup>
-import { getCurrentInstance, onMounted, reactive, ref, watch } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, reactive, ref, toRaw, watch } from 'vue';
 import QRCode from 'qrcode';
 import ClipboardJS from 'clipboard';
 import superagent from 'superagent'
@@ -308,10 +333,6 @@ const dragging = ref(false),
       success: '选择图片成功'
     }
   }),
-  config = reactive({
-    everyday: false,
-    hideVoteNum: false
-  }),
   qrLink = ref(''),
   voteData = reactive({
     title: 'title',
@@ -320,7 +341,8 @@ const dragging = ref(false),
     single: true,
     max: 0,
     min: 0,
-    options: []
+    options: [],
+    description: ''
   }),
   voteDataEdit = reactive({
     title: voteData.title,
@@ -328,7 +350,16 @@ const dragging = ref(false),
     end: dayjs(voteData.end).format('YYYY-MM-DDTHH:mm'),
     single: voteData.single,
     max: voteData.max,
-    min: voteData.min
+    min: voteData.min,
+    description: ''
+  }),
+  voteConfig = reactive({
+    everyday: false,
+    hideResult: false
+  }),
+  voteConfigEdit = reactive({
+    everyday: false,
+    hideResult: false
   }),
   disableOption = ref(false),
   visit = ref(0),
@@ -346,12 +377,17 @@ const dragging = ref(false),
   haveVoted = ref(false),
   submitting = ref(false)
 const uuid = proxy.$route.params.uuid
-let cjs
+let cjs, editOptionIndex = ref(-1)
 
 onMounted(() => {
   console.log(utils.config);
   initClipboard()
 })
+
+superagent.post('/api/count')
+  .send({ uuid })
+  .then(() => { }).catch(() => { })
+
 function init(uuid1 = uuid) {
   if (uuid1) {
     superagent.post('/api/content')
@@ -371,8 +407,11 @@ function init(uuid1 = uuid) {
             voteData.single = e.body.data.single
             voteData.max = e.body.data.max
             voteData.min = e.body.data.min
-            voteEditInit()
-            e.body.data.options.forEach(e1 => {
+            voteData.description = e.body.data.description
+            voteConfig.everyday = !!e.body.data.everyday
+            voteConfig.hideResult = !!e.body.data.hideResult
+
+            e.body.data.options && e.body.data.options.forEach(e1 => {
               e1.checked = e1.disable = false
             });
             e.body.data.options && (voteData.options = e.body.data.options)
@@ -424,31 +463,6 @@ watch(() => utils.config.skey, (n, o) => {
 })
 const optionClick = lodash.debounce(function (e) {
   countChecked()
-  // if (voteData.single) {
-  //   let ind
-  //   if (voteData.options.some((e, i) => {
-  //     if (e.checked) ind = i;
-  //     return e.checked
-  //   })) {
-  //     voteData.options.forEach((e, i) => {
-  //       if (i != ind) e.disable = true
-  //     });
-  //   } else {
-  //     voteData.options.forEach((e, i) => {
-  //       e.disable = false
-  //     });
-  //   }
-  // } else {
-  //   if (checkedNum.value == voteData.max) {
-  //     voteData.options.forEach((e, i) => {
-  //       if (!e.checked) e.disable = true
-  //     });
-  //   } else {
-  //     voteData.options.forEach((e, i) => {
-  //       e.disable = false
-  //     });
-  //   }
-  // }
 }, 100)
 
 function countChecked() {
@@ -493,24 +507,57 @@ function removeImage(e) {
   option.imgUrl = option.imgName = ''
   tip.use = 'default'
 }
+function openAddOption() {
+  resetAddOption()
+  editOptionIndex.value = -1
+}
 function addOption(e) {
   console.log('add', option);
   const req = superagent.post('/api/addOption')
     .field({
+      type: ~editOptionIndex.value ? 'edit' : 'add',
       title: option.title,
       uuid,
     })
-  if (option.imgUrl) req.attach('image', option.img, option.imgName)
+  if (~editOptionIndex.value) {
+    if (option.imgUrl) {
+      if (option.imgUrl != voteData.options[editOptionIndex.value].image)
+        req.attach('image', option.img, option.imgName)
+    } else {
+      req.field({
+        noImage: true
+      })
+    }
+    req.field({
+      optionId: voteData.options[editOptionIndex.value].optionId
+    })
+  } else {
+    if (option.imgUrl) req.attach('image', option.img, option.imgName)
+  }
   req.then(e => {
     console.log(e.body);
-    if (e.body.status) {
-      e.body.data.checked = false
-      voteData.options.push(e.body.data)
-      resetAddOption()
+    if (~editOptionIndex.value) {
+      if (e.body.status) {
+        proxy.$toast('修改成功')
+        voteData.options[editOptionIndex.value].content = option.title
+        if (e.body.data) voteData.options[editOptionIndex.value].image = e.body.data
+        document.getElementById('add-option').checked = false
+      } else {
+        proxy.$toast('修改失败，请重试')
+      }
     } else {
-      proxy.$toast('添加失败，请重试')
+      if (e.body.status) {
+        e.body.data.checked = false
+        voteData.options.push(e.body.data)
+        proxy.$toast('添加成功')
+        document.getElementById('add-option').checked = false
+      } else {
+        proxy.$toast('添加失败，请重试')
+      }
     }
-  }).catch(err => { })
+  }).catch(err => {
+    proxy.$toast(~editOptionIndex.value ? '修改' : '添加' + '错误，请重试')
+  })
 }
 function voteEditInit() {
   voteDataEdit.title = voteData.title
@@ -521,10 +568,94 @@ function voteEditInit() {
   voteDataEdit.min = voteData.min
 }
 function voteEditSave() {
-
+  let data = JSON.parse(JSON.stringify(voteDataEdit))
+  data.start = +dayjs(data.start)
+  data.end = +dayjs(data.end)
+  console.log(data);
+  superagent.post('/api/update')
+    .send({
+      type: 'edit',
+      uuid,
+      data
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('修改成功')
+        for (const k in data) {
+          voteData[k] = data[k]
+        }
+        document.getElementById('edit-modal').checked = false
+      } else {
+        proxy.$toast('修改失败，请重试')
+      }
+    }).catch(e => {
+      proxy.$toast('修改失败，请重试')
+    })
 }
-function saveConfig(e) {
-  console.log('save');
+function deleteVote() {
+  superagent.post('/api/delete')
+    .send({
+      uuid
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('删除成功')
+        proxy.$router.push({
+          name: 'index'
+        })
+      } else {
+        if (e.body.msg) proxy.$toast(e.body.msg)
+        else proxy.$toast('删除失败，请重试')
+      }
+    }).catch(e => {
+      proxy.$toast('删除错误，请重试')
+    })
+}
+function voteConfigInit() {
+  for (const key in voteConfig) {
+    voteConfigEdit[key] = voteConfig[key]
+  }
+}
+function saveConfig() {
+  let data = JSON.parse(JSON.stringify(voteConfigEdit))
+  superagent.post('/api/update')
+    .send({
+      type: 'config',
+      uuid,
+      data: voteConfigEdit
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('修改成功')
+        for (const k in data) {
+          voteData[k] = data[k]
+        }
+        document.getElementById('vote-config').checked = false
+      } else {
+        proxy.$toast('修改失败，请重试')
+      }
+    }).catch(e => {
+      proxy.$toast('修改失败，请重试')
+    })
+}
+function openEditOption(e) {
+  resetAddOption()
+  editOptionIndex.value = e
+  option.imgUrl = voteData.options[e].image
+  option.title = voteData.options[e].content
+  option.imgName = '选项图片'
+}
+function deleteOption() {
+  superagent.post('/api/deleteOption')
+    .send({
+      uuid,
+      optionId: voteData.options[editOptionIndex.value].optionId
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('删除成功')
+      } else {
+        proxy.$toast('删除失败，请重试')
+      }
+    }).catch(e => {
+      proxy.$toast('删除错误，请重试')
+    })
 }
 function createLinkImg(e) {
   qrLink.value = ''
@@ -682,6 +813,23 @@ svg path {
   @keyframes fadenum {
     100% {
       transform: rotate(360deg);
+    }
+  }
+}
+
+.edit-btn {
+  svg {
+    path {
+      transition: all .3s;
+      fill: var(--primary);
+    }
+
+    &:hover path {
+      fill: var(--secondary);
+    }
+
+    &:active path {
+      fill: var(--primary-light);
     }
   }
 }
