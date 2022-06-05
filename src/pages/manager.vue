@@ -32,8 +32,11 @@
               <td>{{ item.visit }}</td>
               <td>
                 <span class="m-btn text-primary ">编辑</span>
-                <span class="m-btn text-danger " @click="deleteVote(index)">删除</span>
+                <span class="m-btn text-danger " @click.stop="deleteVote(index)">删除</span>
               </td>
+            </tr>
+            <tr v-if="!data?.length">
+              <td colspan="6" class="text-center">还未创建投票 <router-link to="/manager">去创建</router-link></td>
             </tr>
           </tbody>
         </table>
@@ -69,7 +72,7 @@ function to(e) {
 function deleteVote(e) {
   superagent.post('/api/delete')
     .send({
-      uuid:e
+      uuid: data[e].uuid
     }).then(e => {
       if (e.body.status) {
         proxy.$toast('删除成功')

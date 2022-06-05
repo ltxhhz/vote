@@ -64,8 +64,8 @@
               </router-link>
               <div class="avatar-menu position-absolute m-0 left-0 right-0">
                 <div class="m-0">
-                  <div @click="on('/manager')">管理投票</div>
-                  <div @click="logout">退出登录</div>
+                  <div class="text-center" @click="on('/manager')">管理投票</div>
+                  <div class="text-center" @click="logout">退出登录</div>
                 </div>
               </div>
             </li>
@@ -86,7 +86,7 @@
       <div class="rv-fill w-100"></div>
     </div>
   </div>
-  <button class="position-fixed d-none1" style="left: 100px;top:100px;z-index:10;" @click="test">test</button>
+  <button class="position-fixed d-none" style="left: 100px;top:100px;z-index:10;" @click="test">test</button>
   <login ref="login1" v-model="showLogin" />
   <div class="position-fixed left-0 bottom-0 w-100 overflow-hidden position-relative" style="height: 15vh">
     <svg class="waves w-100 h-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -210,15 +210,6 @@ function on(path) {
 }
 </style>
 <style>
-@font-face {
-  font-family: 方正凉凉体;
-  src: url('./assets/fonts/FZSJ-LLTJW.TTF');
-}
-
-@font-face {
-  font-family: 早茶get修改;
-  src: url('./assets/fonts/FZSJ-ZAOCGETXG.TTF');
-}
 
 @font-face {
   font-family: 方正卡通;
