@@ -21,7 +21,7 @@
           <button @click="login" class="col-12 xs-6" :disabled="dis || !account || !password">登录</button>
           <div
             class="form-group mb-0 user-select-none col-12 xs-6 d-inline-flex align-items-center justify-content-center">
-            <label for="remember" class="paper-check m-0" popover-bottom="不是自己的电脑不要勾选此选项">
+            <label for="remember" class="paper-check m-0" popover-bottom="30天免登录">
               <input type="checkbox" name="paperChecks" id="remember" value="option 2" v-model="remember">
               <span>记住我</span>
             </label>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance, ref, watch } from "vue";
+import { computed, getCurrentInstance, nextTick, ref, watch } from "vue";
 import superagent from 'superagent';
 import Cookies from "js-cookie";
 import dayjs from 'dayjs';
@@ -137,7 +137,9 @@ function register() {
       if (e.body.status) {
         proxy.$toast('注册成功，请登录')
         password.value = passwordRetype.value = ''
-        show1.value = 'login'
+        nextTick(()=>{
+          show1.value = 'login'
+        })
       } else {
         if (e.body.msg) proxy.$toast(e.body.msg)
         else proxy.$toast('注册失败，请重试')

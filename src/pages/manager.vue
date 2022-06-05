@@ -32,7 +32,7 @@
               <td>{{ item.visit }}</td>
               <td>
                 <span class="m-btn text-primary ">编辑</span>
-                <span class="m-btn text-danger ">删除</span>
+                <span class="m-btn text-danger " @click="deleteVote(index)">删除</span>
               </td>
             </tr>
           </tbody>
@@ -65,6 +65,24 @@ function to(e) {
   proxy.$router.push({
     path: `/edit/${data[e].uuid}`
   })
+}
+function deleteVote(e) {
+  superagent.post('/api/delete')
+    .send({
+      uuid:e
+    }).then(e => {
+      if (e.body.status) {
+        proxy.$toast('删除成功')
+        proxy.$router.push({
+          name: 'index'
+        })
+      } else {
+        if (e.body.msg) proxy.$toast(e.body.msg)
+        else proxy.$toast('删除失败，请重试')
+      }
+    }).catch(e => {
+      proxy.$toast('删除错误，请重试')
+    })
 }
 </script>
 

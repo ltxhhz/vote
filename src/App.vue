@@ -53,7 +53,7 @@
       <div class="collapsible-body">
         <ul class="inline">
           <template v-if="utils.config.isLogin">
-            <li class="position-relative">
+            <li class="position-relative avatar">
               <router-link to="/manager">
                 <svg t="1653150385031" class="icon" viewBox="0 0 1024 1024" version="1.1"
                   xmlns="http://www.w3.org/2000/svg" p-id="2986" style="width: 1em;height:1em;vertical-align:middle;">
@@ -62,7 +62,12 @@
                     p-id="2987"></path>
                 </svg>{{ utils.config.account }}
               </router-link>
-              <div class="position-absolute m-0 left-0 right-0">1</div>
+              <div class="avatar-menu position-absolute m-0 left-0 right-0">
+                <div class="m-0">
+                  <div @click="on('/manager')">管理投票</div>
+                  <div @click="logout">退出登录</div>
+                </div>
+              </div>
             </li>
           </template>
           <template v-else>
@@ -110,7 +115,6 @@ import superagent from 'superagent';
 
 import login from './components/login.vue';
 import utils from './utils';
-import dayjs from 'dayjs';
 
 BScroll.use(ObserveDOM)
 BScroll.use(MouseWheel)
@@ -180,6 +184,17 @@ function notLogin(e) {
     proxy.$toast('请先登录或注册')
     utils.config.login.show()
   }
+}
+function logout() {
+  console.log('logout');
+  Cookies.remove('skey')
+  delete utils.config.skey
+  utils.config.isLogin = false
+}
+function on(path) {
+  proxy.$router.push({
+    path
+  })
 }
 </script>
 
@@ -280,6 +295,36 @@ body {
 
   h1 {
     font-size: 24px;
+  }
+}
+
+.avatar {
+  >.avatar-menu {
+    display: none;
+    font-size: 15px;
+    padding-top: 20px;
+    min-width: 100px;
+
+    >div {
+      border-radius: 5px;
+      background-color: var(--primary-light);
+
+      >div {
+        border-radius: 5px;
+        margin: 2px;
+        padding: 5px 0;
+        cursor: pointer;
+
+        &:hover {
+          background-color: var(--secondary-light);
+        }
+      }
+    }
+  }
+
+  &:hover>.avatar-menu {
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

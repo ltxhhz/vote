@@ -130,7 +130,8 @@
       <div class="col-12 sm-4 mb-2 row justify-content-center">
         <span class="mr-1 text-nowrap col-12 sm-6">投票规则</span>
         <div class="col-12">
-          <code class="text-nowrap ">{{ voteData.single ? '单选' : `多选 [${voteData.min} - ${voteData.max}]` }}</code>
+          <code
+            class="text-nowrap ">{{ voteData.single ? '单选' : `多选 [${voteData.max && voteData.min ? `${voteData.min} - ${voteData.max}` : '无限制'}]` }}</code>
         </div>
       </div>
     </div>
@@ -156,7 +157,8 @@
                 </div>
                 <div class="form-group d-flex flex-column">
                   <label for="option-image">选项图片</label>
-                  <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*">
+                  <input ref="inputFile" class="d-none" type="file" name="option-image" id="" accept="image/*"
+                    @change="fileChange">
                   <div v-if="option.imgUrl"
                     class="e-container e-preview position-relative overflow-hidden d-flex flex-column justify-content-center align-items-center align-self-center">
                     <img :src="option.imgUrl" alt="选项图片" :title="option.imgName">
@@ -181,7 +183,7 @@
                 <div class="d-flex justify-content-center">
                   <button v-if="~editOptionIndex" class="btn-danger-outline" @click="deleteOption">删除选项</button>
                   <label for="add-option" class="paper-btn btn-muted mr-3">关闭</label>
-                  <button @click="addOption" v-show="option.title" :disabled="!option.title">{{ ~editOptionIndex ? '修改'
+                  <button @click="addOption" :disabled="!option.title">{{ ~editOptionIndex ? '修改'
                       : '添加'
                   }}</button>
                 </div>
@@ -274,10 +276,10 @@
             </svg>
           </label>
           <div @click.stop="optionClick(index)" class="form-group d-flex align-items-center option flex-fill mb-0">
-            <label :for="item.optionId" class="paper-radio flex-fill mb-0"
-              :class="{ disabled: haveVoted || (voteData.single ? (!item.checked) : (checkedNum == voteData.max && !item.checked)) }">
-              <input :type="voteData.single ? 'radio' : 'checkbox'" :id="item.optionId" v-model="item.checked"
-                :disabled="disableOption || haveVoted">
+            <label :for="item.optionId" class="paper-radio flex-fill mb-0" :data-check="item.checked"
+              :class="{ disabled: haveVoted || (voteData.single ? false : voteData.max && voteData.min && (checkedNum == voteData.max && !item.checked)) }">
+              <input name="option" :type="voteData.single ? 'radio' : 'checkbox'" :id="item.optionId"
+                v-model="item.checked" :value="true" :disabled="haveVoted">
               <span>{{ item.content }}</span>
             </label>
             <label v-if="item.image" class="option-image cursor-pointer m-0" popover-left="点击放大" for="preview-image"
@@ -289,7 +291,7 @@
 
         <div class="d-flex justify-content-center">
           <button class="d-flex align-items-center justify-content-around" @click="submit"
-            :disabled="submitting || haveVoted">
+            :disabled="submitting || haveVoted || !checkedNum">
             <span class="pr-2">{{ haveVoted ? '已参与' : submitting ? '投票中' : '参与投票' }}</span>
             <svg t="1654176438861" class="icon " :class="{ 'submit-loading': submitting }" viewBox="0 0 1024 1024"
               version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4311" width="32" height="32">
@@ -322,6 +324,7 @@ import dayjs from 'dayjs';
 import lodash from 'lodash';
 
 import utils from '../utils';
+import { onBeforeRouteUpdate } from 'vue-router';
 
 const { proxy } = getCurrentInstance()
 const dragging = ref(false),
@@ -361,7 +364,6 @@ const dragging = ref(false),
     everyday: false,
     hideResult: false
   }),
-  disableOption = ref(false),
   visit = ref(0),
   part = ref(0),
   //0 查看、编辑、投票 1查看、投票 2查看
@@ -376,9 +378,12 @@ const dragging = ref(false),
   checkedNum = ref(0),
   haveVoted = ref(false),
   submitting = ref(false)
-const uuid = proxy.$route.params.uuid
+let uuid = proxy.$route.params.uuid
 let cjs, editOptionIndex = ref(-1)
-
+onBeforeRouteUpdate((to, from, next) => {
+  console.log('routeUpdate', to, from);
+  init(uuid = to.params.uuid)
+})
 onMounted(() => {
   console.log(utils.config);
   initClipboard()
@@ -482,6 +487,19 @@ function uploadDragEnter(e) {
 }
 function uploadDragLeave(e) {
   dragging.value = false
+}
+function fileChange(e) {
+  const file = proxy.$refs.inputFile.files[0]
+  console.log(file);
+  if (file && /^image\/.+$/.test(file.type) && file.size / 1024 / 1024 < 10) {
+    option.img = file
+    option.imgUrl = URL.createObjectURL(file)
+    option.imgName = file.name
+    tip.use = 'success'
+  } else {
+    console.log('只接受图片，且大小不超过10mb');
+    tip.use = 'error'
+  }
 }
 function uploadDragDrop(e) {
   dragging.value = false
@@ -687,10 +705,10 @@ function submit() {
         } else {
           proxy.$toast("投票失败，请重试")
         }
-        submitting.value = false
       }
     }).catch(err => {
       proxy.$toast("投票失败，请重试")
+    }).finally(() => {
       submitting.value = false
     })
 }

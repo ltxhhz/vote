@@ -22,9 +22,9 @@
       </div>
     </div>
     <div class="d-flex justify-content-around child-borders">
-      <div class="paper border-dashed">1</div>
-      <div class="paper border-dashed">2</div>
-      <div class="paper border-dashed">3</div>
+      <div class="paper border-dashed">简单</div>
+      <div class="paper border-dashed">方便</div>
+      <div class="paper border-dashed">快捷</div>
     </div>
   </div>
 </template>
