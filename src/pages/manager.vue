@@ -36,7 +36,7 @@
               </td>
             </tr>
             <tr v-if="!data?.length">
-              <td colspan="6" class="text-center">还未创建投票 <router-link to="/manager">去创建</router-link></td>
+              <td colspan="6" class="text-center">还未创建投票 <router-link to="/create">去创建</router-link></td>
             </tr>
           </tbody>
         </table>
