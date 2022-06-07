@@ -163,7 +163,7 @@ function verify(e) {
     notLogin()
     return false
   }
-  superagent.get('/api/verify')
+  superagent.get('api/verify')
     .then(e => {
       console.log('验证结果', e.body);
       if (e.body.data) {

@@ -389,13 +389,13 @@ onMounted(() => {
   initClipboard()
 })
 
-superagent.post('/api/count')
+superagent.post('api/count')
   .send({ uuid })
   .then(() => { }).catch(() => { })
 
 function init(uuid1 = uuid) {
   if (uuid1) {
-    superagent.post('/api/content')
+    superagent.post('api/content')
       .send({
         uuid: uuid1
       }).then(e => {
@@ -531,7 +531,7 @@ function openAddOption() {
 }
 function addOption(e) {
   console.log('add', option);
-  const req = superagent.post('/api/addOption')
+  const req = superagent.post('api/addOption')
     .field({
       type: ~editOptionIndex.value ? 'edit' : 'add',
       title: option.title,
@@ -590,7 +590,7 @@ function voteEditSave() {
   data.start = +dayjs(data.start)
   data.end = +dayjs(data.end)
   console.log(data);
-  superagent.post('/api/update')
+  superagent.post('api/update')
     .send({
       type: 'edit',
       uuid,
@@ -610,7 +610,7 @@ function voteEditSave() {
     })
 }
 function deleteVote() {
-  superagent.post('/api/delete')
+  superagent.post('api/delete')
     .send({
       uuid
     }).then(e => {
@@ -634,7 +634,7 @@ function voteConfigInit() {
 }
 function saveConfig() {
   let data = JSON.parse(JSON.stringify(voteConfigEdit))
-  superagent.post('/api/update')
+  superagent.post('api/update')
     .send({
       type: 'config',
       uuid,
@@ -661,7 +661,7 @@ function openEditOption(e) {
   option.imgName = '选项图片'
 }
 function deleteOption() {
-  superagent.post('/api/deleteOption')
+  superagent.post('api/deleteOption')
     .send({
       uuid,
       optionId: voteData.options[editOptionIndex.value].optionId
@@ -688,7 +688,7 @@ function preview(e) {
 }
 function submit() {
   submitting.value = true
-  superagent.post('/api/vote')
+  superagent.post('api/vote')
     .send({
       uuid,
       checked: voteData.options.filter(item => item.checked).map(item => item.optionId)

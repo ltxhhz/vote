@@ -98,7 +98,7 @@ watch(() => props.modelValue, (n, o) => {
 
 function login() {
   dis.value = true
-  superagent.post('/api/login')
+  superagent.post('api/login')
     .send({
       account: account.value,
       password: password.value,

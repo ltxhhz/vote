@@ -83,7 +83,7 @@ function next(e) {
       delete s.min
     }
     if (!s.description) delete s.description
-    superagent.post('/api/create')
+    superagent.post('api/create')
     .send({
       data:s
     }).then(e=>{

@@ -52,7 +52,7 @@ import superagent from 'superagent';
 const { proxy } = getCurrentInstance()
 
 const data = reactive([])
-superagent.get('/api/manager')
+superagent.get('api/manager')
   .then(e => {
     if (e.body.status) {
       data.push(...e.body.data)
@@ -70,7 +70,7 @@ function to(e) {
   })
 }
 function deleteVote(e) {
-  superagent.post('/api/delete')
+  superagent.post('api/delete')
     .send({
       uuid: data[e].uuid
     }).then(e => {
