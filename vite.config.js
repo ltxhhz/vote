@@ -9,8 +9,8 @@ export default defineConfig({
   base:'/vote/',
   server:{
     proxy:{
-      '/api':host,
-      '/image':host
+      '/vote/api':host,
+      '/vote/image':host
     }
   }
 })

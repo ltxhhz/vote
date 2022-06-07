@@ -278,8 +278,10 @@
           <div @click.stop="optionClick(index)" class="form-group d-flex align-items-center option flex-fill mb-0">
             <label :for="item.optionId" class="paper-radio flex-fill mb-0" :data-check="item.checked"
               :class="{ disabled: haveVoted || (voteData.single ? false : voteData.max && voteData.min && (checkedNum == voteData.max && !item.checked)) }">
-              <input name="option" :type="voteData.single ? 'radio' : 'checkbox'" :id="item.optionId"
-                v-model="item.checked" :value="true" :disabled="haveVoted">
+              <input v-if="voteData.single" name="option" type="radio" :id="item.optionId" v-model="optionRadio"
+                :value="item.optionId" :disabled="haveVoted">
+              <input v-else name="option" type="checkbox" :id="item.optionId" v-model="item.checked"
+                :value="item.optionId" :disabled="haveVoted">
               <span>{{ item.content }}</span>
             </label>
             <label v-if="item.image" class="option-image cursor-pointer m-0" popover-left="点击放大" for="preview-image"
@@ -291,7 +293,7 @@
 
         <div class="d-flex justify-content-center">
           <button class="d-flex align-items-center justify-content-around" @click="submit"
-            :disabled="submitting || haveVoted || !checkedNum">
+            :disabled="submitting || haveVoted || (!checkedNum && !optionRadio)">
             <span class="pr-2">{{ haveVoted ? '已参与' : submitting ? '投票中' : '参与投票' }}</span>
             <svg t="1654176438861" class="icon " :class="{ 'submit-loading': submitting }" viewBox="0 0 1024 1024"
               version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4311" width="32" height="32">
@@ -347,6 +349,7 @@ const dragging = ref(false),
     options: [],
     description: ''
   }),
+  optionRadio = ref(''),
   voteDataEdit = reactive({
     title: voteData.title,
     start: dayjs(voteData.start).format('YYYY-MM-DDTHH:mm'),
@@ -412,10 +415,13 @@ function init(uuid1 = uuid) {
             voteData.description = e.body.data.description
             voteConfig.everyday = !!e.body.data.everyday
             voteConfig.hideResult = !!e.body.data.hideResult
-
-            e.body.data.options && e.body.data.options.forEach(e1 => {
-              e1.checked = e1.disable = false
-            });
+            if (e.body.data.single) {
+              e.body.data.options && (optionRadio.value = e.body.data.options[0].optionId)
+            } else {
+              e.body.data.options && e.body.data.options.forEach(e1 => {
+                e1.checked = e1.disable = false
+              });
+            }
             e.body.data.options && (voteData.options = e.body.data.options)
 
             visit.value = e.body.data.visit
@@ -680,7 +686,7 @@ function submit() {
   superagent.post('api/vote')
     .send({
       uuid,
-      checked: voteData.options.filter(item => item.checked).map(item => item.optionId)
+      checked: voteData.single ? [optionRadio.value] : voteData.options.filter(item => item.checked).map(item => item.optionId)
     })
     .then(e => {
       if (e.body.status) {
