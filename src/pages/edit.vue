@@ -381,11 +381,9 @@ const dragging = ref(false),
 let uuid = proxy.$route.params.uuid
 let cjs, editOptionIndex = ref(-1)
 onBeforeRouteUpdate((to, from, next) => {
-  console.log('routeUpdate', to, from);
   init(uuid = to.params.uuid)
 })
 onMounted(() => {
-  console.log(utils.config);
   initClipboard()
 })
 
@@ -399,7 +397,6 @@ function init(uuid1 = uuid) {
       .send({
         uuid: uuid1
       }).then(e => {
-        console.log(e.body);
         if (e.body.status == 1) {
           if (!e.body.data) {
             proxy.$router.push({
@@ -424,7 +421,6 @@ function init(uuid1 = uuid) {
             visit.value = e.body.data.visit
             part.value = e.body.data.part
             level.value = utils.config.account ? (e.body.data.account == utils.config.account) ? 0 : 1 : 2
-            console.log(level.value);
             haveVoted.value = !!e.body.data.haveVoted
             if (e.body.data.choice) {
               /** @type {Array<string>} */
@@ -463,7 +459,6 @@ function initClipboard() {
 }
 init()
 watch(() => utils.config.skey, (n, o) => {
-  console.log('登录了', n, o);
   init()
 })
 const optionClick = lodash.debounce(function (e) {
@@ -490,14 +485,13 @@ function uploadDragLeave(e) {
 }
 function fileChange(e) {
   const file = proxy.$refs.inputFile.files[0]
-  console.log(file);
   if (file && /^image\/.+$/.test(file.type) && file.size / 1024 / 1024 < 10) {
     option.img = file
     option.imgUrl = URL.createObjectURL(file)
     option.imgName = file.name
     tip.use = 'success'
   } else {
-    console.log('只接受图片，且大小不超过10mb');
+    console.error('只接受图片，且大小不超过10mb');
     tip.use = 'error'
   }
 }
@@ -505,16 +499,14 @@ function uploadDragDrop(e) {
   dragging.value = false
   let { files: [file], types: [type], items: [item] } = e.dataTransfer
   if (file && item.kind == 'file' && /^image\/.+$/.test(item.type) && file.size / 1024 / 1024 < 10) {
-    console.log('yes', file);
     option.img = file
     option.imgUrl = URL.createObjectURL(file)
     option.imgName = file.name
     tip.use = 'success'
   } else {
-    console.log('只接受图片，且大小不超过10mb');
+    console.error('只接受图片，且大小不超过10mb');
     tip.use = 'error'
   }
-  console.log(e.dataTransfer.files.length, e.dataTransfer.types, e.dataTransfer.items[0]);
 }
 function resetAddOption() {
   removeImage()
@@ -530,7 +522,6 @@ function openAddOption() {
   editOptionIndex.value = -1
 }
 function addOption(e) {
-  console.log('add', option);
   const req = superagent.post('api/addOption')
     .field({
       type: ~editOptionIndex.value ? 'edit' : 'add',
@@ -553,7 +544,6 @@ function addOption(e) {
     if (option.imgUrl) req.attach('image', option.img, option.imgName)
   }
   req.then(e => {
-    console.log(e.body);
     if (~editOptionIndex.value) {
       if (e.body.status) {
         proxy.$toast('修改成功')
@@ -589,7 +579,6 @@ function voteEditSave() {
   let data = JSON.parse(JSON.stringify(voteDataEdit))
   data.start = +dayjs(data.start)
   data.end = +dayjs(data.end)
-  console.log(data);
   superagent.post('api/update')
     .send({
       type: 'edit',

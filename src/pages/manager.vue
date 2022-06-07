@@ -60,7 +60,7 @@ superagent.get('api/manager')
       proxy.$toast('加载失败，请重试')
     }
   }).catch(e => {
-    console.log(e);
+    console.error(e?.error);
     proxy.$toast('加载出错，请重试')
   })
 

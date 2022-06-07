@@ -41,7 +41,6 @@ function start(e) {
     proxy.$router.push('/create')
   } else {
     proxy.$toast('请先登录或注册')
-    console.log(utils)
     utils.config.login.show()
   }
 }

@@ -87,7 +87,6 @@ function next(e) {
     .send({
       data:s
     }).then(e=>{
-      console.log(e.body);
       if (e.body.status==1) {
         proxy.$router.push({name:'edit',params:{uuid:e.body.data}})
       } else {
@@ -96,10 +95,8 @@ function next(e) {
     }).catch(r=>{
       proxy.$toast('创建失败，请重试')
     })
-    console.log(data, s);
   } else {
     proxy.$toast('请先登录或注册')
-    console.log(utils)
     utils.config.login.show()
   }
 }
